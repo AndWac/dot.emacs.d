@@ -1,0 +1,7 @@
+(
+ (:id "sha1:24c7a1e6369fef1e50de1deb1a9e5bbc68f80c8b" :fingerprint "sha1:25:1c:e6:99:ef:b4:11:f3:82:3d:03:87:24:64:d1:d1:87:4f:a7:d6" :host "orgmode.org:443" :conditions (:insecure :unknown-ca :invalid))
+ (:id "sha1:fb978c85c0cf3c9d62d497157827b311f7197e87" :fingerprint "sha1:ec:5a:90:40:88:db:9c:fc:04:63:cf:6e:c4:53:9a:61:2e:eb:b1:9b" :host "www.gnu.org:443" :conditions (:insecure :unknown-ca :invalid))
+ (:id "sha1:6d4eb958390599243ba9f5035cb671fa8dd6a93a" :fingerprint "sha1:96:05:a1:7e:b9:cb:80:a0:45:2a:ff:29:5b:da:f9:38:80:44:c1:84" :host "elpa.gnu.org:443" :conditions (:insecure :unknown-ca :invalid))
+ (:id "sha1:ccfd2cc2a08c89a9b10969be8c1e926954d53e28" :fingerprint "sha1:8a:24:16:cb:86:21:fc:7c:fa:e3:29:4c:4e:87:63:2e:12:82:23:7e" :host "stable.melpa.org:443" :conditions (:insecure :unknown-ca :invalid))
+ (:id "sha1:85b31c268009209a8d3c5387033b219264f7e62b" :fingerprint "sha1:8a:24:16:cb:86:21:fc:7c:fa:e3:29:4c:4e:87:63:2e:12:82:23:7e" :host "melpa.org:443" :conditions (:insecure :unknown-ca :invalid))
+)
