@@ -7,10 +7,13 @@
 auto-save-list
 tramp
 .\#*
+places
+recentf
 
 # Org-mode
 .org-id-locations
 *_archive
+org-clock-save.el
 
 # flymake-mode
 *_flymake.*
@@ -47,4 +50,7 @@ projectile-bookmarks.eld
 
 # network security
 /network-security.data
+
+# I don't want custom settings archived:
+custom.el
 
