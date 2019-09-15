@@ -17,21 +17,18 @@
 
 
 ;; LaTeX
-;; (use-package tex-site
-;;   :ensure auctex
-;;   :mode ("\\.tex\\'" . latex-mode)
-;;   :config
-;;   (setq-default TeX-master nil)
-;;   (add-hook 'LaTeX-mode-hook
-;; 	    (lambda ()
-;; 	      (rainbow-delimiters-mode)
-;; 	      (company-mode)
-;; 	      (smartparens-mode)
-;; 	      (turn-on-reftex)
-;; 	      ))
-
-;; Update PDF buffers after successful LaTeX runs
-;;  (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook #'TeX-revert-document-buffer)
-
-;; to use pdfview with auctex
-;;  (add-hook 'LaTeX-mode-hook 'pdf-tools-install))
+(use-package tex-site
+   :ensure auctex
+   :mode ("\\.tex\\'" . latex-mode)
+   :config
+   (setq-default TeX-master nil)
+   (add-hook 'LaTeX-mode-hook
+ 	    (lambda ()
+ 	      (rainbow-delimiters-mode)
+ 	      (company-mode)
+ 	      (smartparens-mode)
+ 	      (turn-on-reftex)))
+    ;; Update PDF buffers after successful LaTeX runs
+    (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook #'TeX-revert-document-buffer)
+    ;; to use pdfview with auctex
+    (add-hook 'LaTeX-mode-hook 'pdf-tools-install))

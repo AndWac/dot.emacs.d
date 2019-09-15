@@ -7,9 +7,9 @@
 
 (package-initialize nil)
 (add-to-list 'package-archives
-             '("org" . "http://orgmode.org/elpa/"))
+             '("org" . "https://orgmode.org/elpa/"))
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
+             '("melpa" . "https://melpa.org/packages/") t)
 (setq package-archive-priorities '(("org" . 3)
                                    ("melpa" . 2)
                                    ("gnu" . 1)))
@@ -28,10 +28,10 @@
 (load-file "~/.emacs.d/config/init-10-general.el")
 
 ;; === Keyboard Settings ===
-(load-file "~/.emacs.d/config/init-20-keyboard.el")
+(load-file "~/.emacs.d/config/init-20-bindings.el")
 
 ;; === Generic Settings ===
-(load-file "~/.emacs.d/config/init-30-generic.el")
+(load-file "~/.emacs.d/config/init-30-default.el")
 
 ;; === Develpoment Settings ===
 (load-file "~/.emacs.d/config/init-40-dev.el")
@@ -39,8 +39,8 @@
 ;; === Web Settings ===
 (load-file "~/.emacs.d/config/init-50-web.el")
 
-;; === Python Settings ===
-(load-file "~/.emacs.d/config/init-60-python.el")
+;; === Mu4E Settings ===
+;;(load-file "~/.emacs.d/config/init-60-mu4e.el")
 
 ;; === Org Settings ===
 (load-file "~/.emacs.d/config/init-70-org.el")
@@ -72,5 +72,11 @@
  )
 
 
-(load "server")
-(unless (server-running-p) (server-start))
+(use-package server                                                                                                                                                         
+  :config                                                                                                                            
+  (progn                                                                                                                             
+    (defun server-enable ()                                                                                                          
+      (unless (server-running-p)                                                                                                     
+        (server-start)))                                                                                                             
+    (add-hook 'after-init-hook 'server-enable t)))                                                                                   
+

@@ -118,3 +118,8 @@
 
 
 (setq-default typescript-indent-level 2)
+
+
+(use-package nginx-mode
+  :mode "\\.nginx\\'")
+

@@ -1,6 +1,5 @@
-;; init-10-generic.el --- Generic emacs settings
+;; init-10-general.el --- General settings
 ;; Copyright (C) 2019 Andreas Wacknitz
-
 (require 'use-package)
 
 
@@ -26,6 +25,82 @@
 (if (> (x-display-pixel-height) 1200)
     (set-frame-font "Fira Code 20" nil t)
   (set-frame-font "Fira Code 15" nil t))
+
+
+(use-package telephone-line
+	:config
+	(setq telephone-line-lhs
+	  '((evil   . (telephone-line-evil-tag-segment))
+		(accent . (telephone-line-vc-segment
+					telephone-line-erc-modified-channels-segment
+					telephone-line-process-segment))
+		(nil    . (telephone-line-minor-mode-segment
+					telephone-line-buffer-segment))))
+	(setq telephone-line-rhs
+		  '((nil    . (telephone-line-misc-info-segment))
+			(accent . (telephone-line-major-mode-segment))
+			(evil   . (telephone-line-airline-position-segment))))
+	(telephone-line-mode t))
+
+
+(defun set-frame-size-according-to-resolution ()
+  (interactive)
+  (if window-system
+      (progn
+        ;; use 120 char wide window for largeish displays
+        ;; and smaller 80 column windows for smaller displays
+        ;; pick whatever numbers make sense for you
+        (if (> (x-display-pixel-width) 1280)
+            (add-to-list 'default-frame-alist (cons 'width 120))
+          (add-to-list 'default-frame-alist (cons 'width 80)))
+        ;; for the height, subtract a couple hundred pixels
+        ;; from the screen height (for panels, menubars and
+        ;; whatnot), then divide by the height of a char to
+        ;; get the height we want
+        (add-to-list 'default-frame-alist
+                     (cons 'height (/ (- (x-display-pixel-height) 320)
+                                      (frame-char-height)))))))
+
+(set-frame-size-according-to-resolution)
+
+
+;; Pretty
+;; Base set of pretty symbols.
+(defvar base-prettify-symbols-alist '(("lambda" . ?λ)))
+
+(defun my-lisp-prettify-symbols-hook ()
+  "Set pretty symbols for lisp modes."
+  (setq prettify-symbols-alist base-prettify-symbols-alist))
+
+(defun my-python-prettify-symbols-hook ()
+  "Set pretty symbols for python."
+  (setq prettify-symbols-alist base-prettify-symbols-alist))
+
+(defun my-js-prettify-symbols-hook ()
+  "Set pretty symbols for JavaScript."
+  (setq prettify-symbols-alist
+        (append '(("function" . ?ƒ)) base-prettify-symbols-alist)))
+
+(defun my-prettify-symbols-hook ()
+  "Set pretty symbols for non-lisp programming modes."
+  (setq prettify-symbols-alist
+        (append '(("==" . ?≡)
+                  ("!=" . ?≠)
+                  ("<=" . ?≤)
+                  (">=" . ?≥)
+                  ("<-" . ?←)
+                  ("->" . ?→)
+                  ("<=" . ?⇐)
+                  ("=>" . ?⇒))
+                base-prettify-symbols-alist)))
+
+;; Hook 'em up.
+(add-hook 'emacs-lisp-mode-hook 'my-lisp-prettify-symbols-hook)
+(add-hook 'web-mode-hook 'my-prettify-symbols-hook)
+(add-hook 'js-mode-hook 'my-js-prettify-symbols-hook)
+(add-hook 'python-mode-hook 'my-python-prettify-symbols-hook)
+(add-hook 'prog-mode-hook 'my-prettify-symbols-hook)
+;; (global-prettify-symbols-mode 1);; Base set of pretty symbols.
 
 (setq tramp-default-method "ssh")          ;; Default connection method for TRAMP - remote files plugin
 (setq gc-cons-threshold (* 100 1024 1024)) ;; Reduce the frequency of garbage collection (default is 0.76MB, this sets it to 100 MB)
@@ -99,6 +174,16 @@
 (global-subword-mode 1)                      ;; Easily navigate sillycased words
 (set-default 'sentence-end-double-space nil) ;; Sentences do not need double spaces to end. Period.
 
+
+;; Indentation
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+
+
+;; Browser
+(setq browse-url-browser-function 'browse-url-xdg-open)
+
+
 ;; eval-expression-print-level needs to be set to nil (turned off) so
 ;; that you can always see what's happening.
 (setq eval-expression-print-level nil)
@@ -107,61 +192,136 @@
 (setq save-interprogram-paste-before-kill t
       mouse-yank-at-point t)
 
-;; Pretty
-;; Base set of pretty symbols.
-(defvar base-prettify-symbols-alist '(("lambda" . ?λ)))
 
-(defun my-lisp-prettify-symbols-hook ()
-  "Set pretty symbols for lisp modes."
-  (setq prettify-symbols-alist base-prettify-symbols-alist))
+;; helpful as an alternative help system
+(use-package helpful
+  :bind
+  (("C-h f" . helpful-callable)
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key)
+   ("C-h F ". helpful-function)
+   ("C-c C-d" . helpful-at-point)
+   ("C-h C" . helpful-command)))
 
-(defun my-python-prettify-symbols-hook ()
-  "Set pretty symbols for python."
-  (setq prettify-symbols-alist base-prettify-symbols-alist))
-
-(defun my-js-prettify-symbols-hook ()
-  "Set pretty symbols for JavaScript."
-  (setq prettify-symbols-alist
-        (append '(("function" . ?ƒ)) base-prettify-symbols-alist)))
-
-(defun my-prettify-symbols-hook ()
-  "Set pretty symbols for non-lisp programming modes."
-  (setq prettify-symbols-alist
-        (append '(("==" . ?≡)
-                  ("!=" . ?≠)
-                  ("<=" . ?≤)
-                  (">=" . ?≥)
-                  ("<-" . ?←)
-                  ("->" . ?→)
-                  ("<=" . ?⇐)
-                  ("=>" . ?⇒))
-                base-prettify-symbols-alist)))
-
-;; Hook 'em up.
-(add-hook 'emacs-lisp-mode-hook 'my-lisp-prettify-symbols-hook)
-(add-hook 'web-mode-hook 'my-prettify-symbols-hook)
-(add-hook 'js-mode-hook 'my-js-prettify-symbols-hook)
-(add-hook 'python-mode-hook 'my-python-prettify-symbols-hook)
-(add-hook 'prog-mode-hook 'my-prettify-symbols-hook)
-;; (global-prettify-symbols-mode 1);; Base set of pretty symbols.
+;; https://github.com/ryuslash/mode-icons
+(use-package mode-icons
+  :config
+  (mode-icons-mode))
 
 
-(defun set-frame-size-according-to-resolution ()
+;; Smooth Scrolling
+(use-package smooth-scrolling
+  :config (smooth-scrolling-mode 1)
+  (setq smooth-scroll-margin 5))
+
+
+;; Which Key
+(use-package which-key
+  :init
+  (setq which-key-separator " ")
+  (setq which-key-prefix-prefix "+")
+  :config
+  (which-key-mode 1))
+
+
+;; Parenthesis change color depending on depth
+(use-package rainbow-delimiters
+  :defer t
+  :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+
+
+;; rainbow-blocks: Understand Clojure/Lisp code at a glance using block highlighting.
+(use-package rainbow-blocks
+  :defer t
+  :init (add-hook 'clojure-mode-hook 'rainbow-blocks-mode))
+
+
+;; Automatic parenthesis
+(use-package smartparens
+  :diminish smartparens-mode
+  :commands
+    smartparens-strict-mode
+    smartparens-mode
+    sp-restrict-to-pairs-interactive
+    sp-local-pair
+  :config
+    (require 'smartparens-config)
+    (sp-use-smartparens-bindings)
+    (sp-pair "(" ")" :wrap "C-(") ;; how do people live without this?
+    (sp-pair "[" "]" :wrap "s-[") ;; C-[ sends ESC
+    (sp-pair "{" "}" :wrap "C-{")
+    ;; WORKAROUND https://github.com/Fuco1/smartparens/issues/543
+    (bind-key "C-<left>"  nil smartparens-mode-map)
+    (bind-key "C-<right>" nil smartparens-mode-map)
+    (bind-key "s-<delete>"    'sp-kill-sexp smartparens-mode-map)
+    (bind-key "s-<backspace>" 'sp-backward-kill-sexp smartparens-mode-map)
+  :bind ("C-x j" . smartparens-mode)
+)
+
+
+;; Folding
+(use-package hideshow
+  :hook ((prog-mode . hs-minor-mode)))
+
+(defun toggle-fold ()
   (interactive)
-  (if window-system
-      (progn
-        ;; use 120 char wide window for largeish displays
-        ;; and smaller 80 column windows for smaller displays
-        ;; pick whatever numbers make sense for you
-        (if (> (x-display-pixel-width) 1280)
-            (add-to-list 'default-frame-alist (cons 'width 120))
-          (add-to-list 'default-frame-alist (cons 'width 80)))
-        ;; for the height, subtract a couple hundred pixels
-        ;; from the screen height (for panels, menubars and
-        ;; whatnot), then divide by the height of a char to
-        ;; get the height we want
-        (add-to-list 'default-frame-alist 
-                     (cons 'height (/ (- (x-display-pixel-height) 320)
-                                      (frame-char-height)))))))
+  (save-excursion
+    (end-of-line)
+    (hs-toggle-hiding)))
 
-(set-frame-size-according-to-resolution)
+
+;;
+(use-package all-the-icons)
+
+
+;; Theme
+(use-package material-theme
+	:config (load-theme 'material t))
+
+;;(use-package doom-themes
+;;  :config
+;;  (progn
+;;    (setq doom-one-brighter-comments t)
+;;    (load-theme 'doom-vibrant t)))
+
+
+(setq holiday-general-holidays
+      '((holiday-fixed 1 1 "Neujahr")
+        (holiday-fixed 5 1 "Tag der Arbeit")
+        (holiday-fixed 10 3 "Tag der deutschen Einheit")))
+(setq holiday-christian-holidays
+      '((holiday-fixed 12 25 "1. Weihnachtstag")
+        (holiday-fixed 12 26 "2. Weihnachtstag")
+        (holiday-fixed 1 6 "Heilige 3 Könige")
+        (holiday-fixed 10 31 "Reformationstag")
+        (holiday-fixed 11 1 "Allerheiligen")
+        ;; Date of Easter calculation taken from holidays.el.
+        (let* ((century (1+ (/ displayed-year 100)))
+               (shifted-epact (% (+ 14 (* 11 (% displayed-year 19))
+                                    (- (/ (* 3 century) 4))
+                                    (/ (+ 5 (* 8 century)) 25)
+                                    (* 30 century))
+                                 30))
+               (adjusted-epact (if (or (= shifted-epact 0)
+                                       (and (= shifted-epact 1)
+                                            (< 10 (% displayed-year 19))))
+                                   (1+ shifted-epact)
+                                 shifted-epact))
+               (paschal-moon (- (calendar-absolute-from-gregorian
+                                 (list 4 19 displayed-year))
+                                adjusted-epact))
+               (easter (calendar-dayname-on-or-before 0 (+ paschal-moon 7))))
+          (holiday-filter-visible-calendar
+           (mapcar
+            (lambda (l)
+              (list (calendar-gregorian-from-absolute (+ easter (car l)))
+                    (nth 1 l)))
+            '(( -2 "Karfreitag")
+              (  0 "Ostersonntag")
+              ( +1 "Ostermontag")
+              (+39 "Christi Himmelfahrt")
+              (+49 "Pfingstsonntag")
+              (+50 "Pfingstmontag")
+              (+60 "Fronleichnam")))))))
+(setq calendar-holidays (append holiday-general-holidays holiday-christian-holidays))
+

@@ -19,12 +19,12 @@
     ;; The GTD part of this config is heavily inspired by
     ;; https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
     (setq org-directory "~/org")
-;    (setq org-agenda-files
-;          (mapcar (lambda (path) (concat org-directory path))
-;                  '("/org.org"
-;                    "/gtd/gtd.org"
-;                    "/gtd/inbox.org"
-;                    "/gtd/tickler.org")))
+    (setq org-agenda-files
+          (mapcar (lambda (path) (concat org-directory path))
+                  '("/org.org"
+                    "/gtd/gtd.org"
+                    "/gtd/inbox.org"
+                    "/gtd/tickler.org")))
     (setq org-log-done 'time)
     (setq org-src-fontify-natively t)
     (setq org-use-speed-commands t)
@@ -54,3 +54,4 @@
   :ensure t
   :commands (org-bullets-mode)
   :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
