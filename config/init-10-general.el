@@ -193,6 +193,23 @@
       mouse-yank-at-point t)
 
 
+(setq winner-mode 1)
+(defalias 'list-buffers 'ibuffer)
+
+
+;; Ido - Interactively do things
+;; show any name that has the chars I typed
+(use-package ido
+  :init
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
+  (ido-mode 1)
+  (setq ido-create-new-buffer 'always) ;; other choices are prompt and never
+  (setq ido-file-extensions-order '(".org" ".txt" ".py" ".emacs" ".xml" ".el" ".ini"))
+  (setq ido-ignore-extensions t)       ;; to make Ido use completion-ignored-extensions
+  (setq ido-use-filename-at-point 'guess))
+
+
 ;; helpful as an alternative help system
 (use-package helpful
   :bind
