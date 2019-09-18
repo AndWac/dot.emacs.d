@@ -24,24 +24,15 @@
                           (registers . 5))))
 
 
+;; Folding
+(use-package hideshow
+  :hook ((prog-mode . hs-minor-mode)))
 
-;; Ido - Interactively do things
-(use-package ido                                                                                                                     
-  :config                                                                                                                            
-  (ido-mode t)                                                                                                                       
-  ;; show any name that has the chars I typed                                                                                        
-  (setq ido-enable-flex-matching t))                                                                                                                                        
-                                                                                                                                     
-                                                                                                                                     
-;; Folding                                                                                                                           
-(use-package hideshow                                                                                                                
-  :hook ((prog-mode . hs-minor-mode)))                                                                                               
-                                                                                                                                     
-(defun toggle-fold ()                                                                                                                
-  (interactive)                                                                                                                      
-  (save-excursion                                                                                                                    
-    (end-of-line)                                                                                                                    
-    (hs-toggle-hiding)))                                                                                                             
+(defun toggle-fold ()
+  (interactive)
+  (save-excursion
+    (end-of-line)
+    (hs-toggle-hiding)))
 
 
 ;; Ivy
@@ -87,7 +78,6 @@
 (use-package ivy-hydra )
 (use-package ivy-xref
   :init (setq xref-show-xrefs-function #'ivy-xref-show-xrefs))
-
 
 
 ;; Treat undo history as a tree
