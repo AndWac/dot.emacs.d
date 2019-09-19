@@ -1,58 +1,43 @@
-;; My own .emacs / emacs.d/init.el file with collected configurations and packages.
-
-;; User Info
+* User Info
+#+BEGIN_SRC emacs-lisp
 (setq user-full-name "Andreas Wacknitz")
 (setq user-mail-address "a.wacknitz@gmx.de")
+#+END_SRC
 
-
-(package-initialize nil)
-(add-to-list 'package-archives
-             '("org" . "https://orgmode.org/elpa/"))
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-(setq package-archive-priorities '(("org" . 3)
-                                   ("melpa" . 2)
-                                   ("gnu" . 1)))
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(setq use-package-verbose t)
-(setq use-package-always-ensure t)  ;; Set the default to automatically install packages if they are not availably yet.
-(eval-when-compile
-  (require 'use-package))
-
-(use-package diminish)
-
-
-;; init-10-general.el --- General settings
-;; Copyright (C) 2019 Andreas Wacknitz
-(require 'use-package)
-
-
-;(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))     ;; Remove menu bar
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))      ;; Remove toolbar
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))  ;; Remove scrollbar
-(if window-system (scroll-bar-mode -1))
-(if (fboundp 'tooltip-mode)    (tooltip-mode -1))     ;; No tooltips
-(setq inhibit-startup-message t)   ;; Disable startup message
-(setq inhibit-splash-screen t)
-(setq ring-bell-function 'ignore)  ;; Disable raping your ears with error ring tone
-(setq initial-scratch-message nil) ;; Disable text in scratch
-
-;; UTF-8 please
+* UTF-8
+#+BEGIN_SRC emacs-lisp
 (set-language-environment "UTF-8")   ; Set input
 (setq locale-coding-system 'utf-8)   ; pretty
 (set-terminal-coding-system 'utf-8)  ; pretty
 (set-keyboard-coding-system 'utf-8)  ; pretty
 (set-selection-coding-system 'utf-8) ; please
 (prefer-coding-system 'utf-8)        ; with sugar on top
+#+END_SRC
 
-;; Set font
-(if (> (x-display-pixel-height) 1200)
-    (set-frame-font "Fira Code 20" nil t)
-  (set-frame-font "Fira Code 15" nil t))
+* use-package tweaks
+#+BEGIN_SRC emacs-lisp
+(setq use-package-always-ensure t)  ;; Set the default to automatically install packages if they are not availably yet.
+(eval-when-compile
+  (require 'use-package))
+;; diminish - remove minor mode strings in the mode-line:
+(use-package diminish)
+#+END_SRC
 
+* Interface tweaks
+#+BEGIN_SRC emacs-lisp
+(if (fboundp 'tooltip-mode) (menu-bar-mode -1))    ;; Remove menu bar
+(if (fboundp 'tooltip-mode) (tool-bar-mode -1))    ;; Remove toolbar
+(if (fboundp 'tooltip-mode) (scroll-bar-mode -1))  ;; Remove scrollbar
+(if (fboundp 'tooltip-mode) (tooltip-mode -1))     ;; No tooltips
+(setq inhibit-startup-message t)   ;; Disable startup message
+(setq inhibit-splash-screen t)
+(setq ring-bell-function 'ignore)  ;; Disable raping your ears with error ring tone
+(setq initial-scratch-message nil) ;; Disable text in scratch
 
+(if window-system
+    (if (> (x-display-pixel-height) 1200)
+        (set-frame-font "Fira Code 20" nil t)
+      (set-frame-font "Fira Code 15" nil t)))
 (use-package telephone-line
 	:config
 	(setq telephone-line-lhs
@@ -67,7 +52,6 @@
 			(accent . (telephone-line-major-mode-segment))
 			(evil   . (telephone-line-airline-position-segment))))
 	(telephone-line-mode t))
-
 
 (defun set-frame-size-according-to-resolution ()
   (interactive)
@@ -86,12 +70,11 @@
         (add-to-list 'default-frame-alist
                      (cons 'height (/ (- (x-display-pixel-height) 320)
                                       (frame-char-height)))))))
-
 (set-frame-size-according-to-resolution)
+#+END_SRC
 
-
-;; Pretty
-;; Base set of pretty symbols.
+** Pretty - base set of pretty symbols.
+#+BEGIN_SRC
 (defvar base-prettify-symbols-alist '(("lambda" . ?λ)))
 
 (defun my-lisp-prettify-symbols-hook ()
@@ -128,6 +111,9 @@
 (add-hook 'prog-mode-hook 'my-prettify-symbols-hook)
 ;; (global-prettify-symbols-mode 1);; Base set of pretty symbols.
 
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
 (setq tramp-default-method "ssh")          ;; Default connection method for TRAMP - remote files plugin
 (setq gc-cons-threshold (* 100 1024 1024)) ;; Reduce the frequency of garbage collection (default is 0.76MB, this sets it to 100 MB)
 (setq-default truncate-lines nil)          ;; Word Wrap (t is no wrap, nil is wrap)
@@ -136,7 +122,6 @@
 (save-place-mode t)                        ;; Save places
 (setq save-place-file (expand-file-name "places" user-emacs-directory))
 (cua-mode t)
-;(global-linum-mode t)              ;; enable line numbers globally
 
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
@@ -158,11 +143,6 @@
                               (buffer-name)
                               (when (buffer-file-name)
                                 (abbreviate-file-name (buffer-file-name))))))
-
-;; (defun display-startup-echo-area-message () ;; Change mini buffer startup message
-;;   (message "system type: %s" system-type))
-
-(defalias 'yes-or-no-p 'y-or-n-p) ;; y/n for yes/no confirmation dial
 
 (setq-default fill-column 80)      ;; Set default fill column
 (setq visible-bell nil)            ;; quiet, please! No dinging!
@@ -1227,3 +1207,5 @@
       (unless (server-running-p)
         (server-start)))
     (add-hook 'after-init-hook 'server-enable t)))
+
+#+END_SRC

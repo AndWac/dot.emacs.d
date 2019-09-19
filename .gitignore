@@ -54,3 +54,6 @@ projectile-bookmarks.eld
 # I don't want custom settings archived:
 custom.el
 
+# File generated from my org file:
+myinit.el
+
