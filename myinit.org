@@ -25,19 +25,24 @@
 
 * Interface tweaks
 #+BEGIN_SRC emacs-lisp
-(if (fboundp 'tooltip-mode) (menu-bar-mode -1))    ;; Remove menu bar
-(if (fboundp 'tooltip-mode) (tool-bar-mode -1))    ;; Remove toolbar
-(if (fboundp 'tooltip-mode) (scroll-bar-mode -1))  ;; Remove scrollbar
+;;(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))    ;; Remove menu bar
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))    ;; Remove toolbar
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))  ;; Remove scrollbar
 (if (fboundp 'tooltip-mode) (tooltip-mode -1))     ;; No tooltips
 (setq inhibit-startup-message t)   ;; Disable startup message
 (setq inhibit-splash-screen t)
 (setq ring-bell-function 'ignore)  ;; Disable raping your ears with error ring tone
-(setq initial-scratch-message nil) ;; Disable text in scratch
-
+#+END_SRC
+*** Font settings
+#+BEGIN_SRC emacs-lisp
 (if window-system
     (if (> (x-display-pixel-height) 1200)
         (set-frame-font "Fira Code 20" nil t)
       (set-frame-font "Fira Code 15" nil t)))
+
+#+END_SRC
+*** telephone-line
+#+BEGIN_SRC emacs-lisp
 (use-package telephone-line
 	:config
 	(setq telephone-line-lhs
@@ -71,49 +76,7 @@
                      (cons 'height (/ (- (x-display-pixel-height) 320)
                                       (frame-char-height)))))))
 (set-frame-size-according-to-resolution)
-#+END_SRC
 
-** Pretty - base set of pretty symbols.
-#+BEGIN_SRC
-(defvar base-prettify-symbols-alist '(("lambda" . ?λ)))
-
-(defun my-lisp-prettify-symbols-hook ()
-  "Set pretty symbols for lisp modes."
-  (setq prettify-symbols-alist base-prettify-symbols-alist))
-
-(defun my-python-prettify-symbols-hook ()
-  "Set pretty symbols for python."
-  (setq prettify-symbols-alist base-prettify-symbols-alist))
-
-(defun my-js-prettify-symbols-hook ()
-  "Set pretty symbols for JavaScript."
-  (setq prettify-symbols-alist
-        (append '(("function" . ?ƒ)) base-prettify-symbols-alist)))
-
-(defun my-prettify-symbols-hook ()
-  "Set pretty symbols for non-lisp programming modes."
-  (setq prettify-symbols-alist
-        (append '(("==" . ?≡)
-                  ("!=" . ?≠)
-                  ("<=" . ?≤)
-                  (">=" . ?≥)
-                  ("<-" . ?←)
-                  ("->" . ?→)
-                  ("<=" . ?⇐)
-                  ("=>" . ?⇒))
-                base-prettify-symbols-alist)))
-
-;; Hook 'em up.
-(add-hook 'emacs-lisp-mode-hook 'my-lisp-prettify-symbols-hook)
-(add-hook 'web-mode-hook 'my-prettify-symbols-hook)
-(add-hook 'js-mode-hook 'my-js-prettify-symbols-hook)
-(add-hook 'python-mode-hook 'my-python-prettify-symbols-hook)
-(add-hook 'prog-mode-hook 'my-prettify-symbols-hook)
-;; (global-prettify-symbols-mode 1);; Base set of pretty symbols.
-
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
 (setq tramp-default-method "ssh")          ;; Default connection method for TRAMP - remote files plugin
 (setq gc-cons-threshold (* 100 1024 1024)) ;; Reduce the frequency of garbage collection (default is 0.76MB, this sets it to 100 MB)
 (setq-default truncate-lines nil)          ;; Word Wrap (t is no wrap, nil is wrap)
@@ -180,15 +143,11 @@
 (global-subword-mode 1)                      ;; Easily navigate sillycased words
 (set-default 'sentence-end-double-space nil) ;; Sentences do not need double spaces to end. Period.
 
-
 ;; Indentation
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 
-
-;; Browser
-(setq browse-url-browser-function 'browse-url-xdg-open)
-
+(setq browse-url-browser-function 'browse-url-xdg-open)  ;; Browser
 
 ;; eval-expression-print-level needs to be set to nil (turned off) so
 ;; that you can always see what's happening.
@@ -199,75 +158,99 @@
       mouse-yank-at-point t)
 
 ;; Winner Mode allows you to “undo” (and “redo”) changes in the window configuration with the key commands ‘C-c left’ and ‘C-c right’.
-(setq winner-mode 1)
+(winner-mode 1)
+;;(global-unset-key (kbd "C-z"))
+(put 'upcase-region 'disabled nil)
+(setq require-final-newline t)
+
 (defalias 'list-buffers 'ibuffer)
 
-;; ace-window: Enhance windows support (try C-X3, C-X3, C-Xo)
+(use-package all-the-icons)
+
+;; https://github.com/ryuslash/mode-icons
+(use-package mode-icons
+  :config
+  (mode-icons-mode))
+#+END_SRC
+
+*** pretty - base set of pretty symbols.
+#+BEGIN_SRC emacs-lisp
+(defvar base-prettify-symbols-alist '(("lambda" . ?λ)))
+
+(defun my-lisp-prettify-symbols-hook ()
+  "Set pretty symbols for lisp modes."
+  (setq prettify-symbols-alist base-prettify-symbols-alist))
+
+(defun my-python-prettify-symbols-hook ()
+  "Set pretty symbols for python."
+  (setq prettify-symbols-alist base-prettify-symbols-alist))
+
+(defun my-js-prettify-symbols-hook ()
+  "Set pretty symbols for JavaScript."
+  (setq prettify-symbols-alist
+        (append '(("function" . ?ƒ)) base-prettify-symbols-alist)))
+
+(defun my-prettify-symbols-hook ()
+  "Set pretty symbols for non-lisp programming modes."
+  (setq prettify-symbols-alist
+        (append '(("==" . ?≡)
+                  ("!=" . ?≠)
+                  ("<=" . ?≤)
+                  (">=" . ?≥)
+                  ("<-" . ?←)
+                  ("->" . ?→)
+                  ("<=" . ?⇐)
+                  ("=>" . ?⇒))
+                base-prettify-symbols-alist)))
+
+;; Hook 'em up.
+(add-hook 'emacs-lisp-mode-hook 'my-lisp-prettify-symbols-hook)
+(add-hook 'web-mode-hook 'my-prettify-symbols-hook)
+(add-hook 'js-mode-hook 'my-js-prettify-symbols-hook)
+(add-hook 'python-mode-hook 'my-python-prettify-symbols-hook)
+(add-hook 'prog-mode-hook 'my-prettify-symbols-hook)
+;; (global-prettify-symbols-mode 1);; Base set of pretty symbols.
+
+#+END_SRC
+*** ace-window - Enhanced windows support
+    try C-X3, C-X3, C-Xo
+#+BEGIN_SRC emacs-lisp
 (use-package ace-window
   :init
   (global-set-key [remap other-window] 'ace-window)
   (custom-set-faces
    '(aw-leading-char-face
      ((t (:inherit ace-jump-face-background :height 3.0))))))
+#+END_SRC
 
-
-;; Ido - Interactively do things
-;; show any name that has the chars I typed
-;;  I don't use this because I prefer swiper:
-;; (use-package ido
-;;   :init
-;;   (setq ido-enable-flex-matching t)
-;;   (setq ido-everywhere t)
-;;   (ido-mode 1)
-;;   (setq ido-create-new-buffer 'always) ;; other choices are prompt and never
-;;   (setq ido-file-extensions-order '(".org" ".txt" ".py" ".emacs" ".xml" ".el" ".ini"))
-;;   (setq ido-ignore-extensions t)       ;; to make Ido use completion-ignored-extensions
-;;   (setq ido-use-filename-at-point 'guess))
-
-
-;; helpful as an alternative help system
-(use-package helpful
-  :bind
-  (("C-h f" . helpful-callable)
-   ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key)
-   ("C-h F ". helpful-function)
-   ("C-c C-d" . helpful-at-point)
-   ("C-h C" . helpful-command)))
-
-;; https://github.com/ryuslash/mode-icons
-(use-package mode-icons
-  :config
-  (mode-icons-mode))
-
-
-;; Smooth Scrolling
-(use-package smooth-scrolling
-  :config (smooth-scrolling-mode 1)
-  (setq smooth-scroll-margin 5))
-
-
-;; Which Key
+*** ido - Interactively do things
+    I don't use this because I prefer swiper:
+*** Which Key
+#+BEGIN_SRC emacs-lisp
 (use-package which-key
   :init
   (setq which-key-separator " ")
   (setq which-key-prefix-prefix "+")
   :config
   (which-key-mode 1))
+#+END_SRC
 
-
-;; Parenthesis change color depending on depth
+*** rainbow-delimiters - parenthesis change color depending on depth
+#+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
   :defer t
   :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+#+END_SRC
 
-
-;; rainbow-blocks: Understand Clojure/Lisp code at a glance using block highlighting.
+*** rainbox-blocks - understand Clojure/Lisp code at a glance using block highlighting.
+#+BEGIN_SRC emacs-lisp
 (use-package rainbow-blocks
   :defer t
   :init (add-hook 'clojure-mode-hook 'rainbow-blocks-mode))
+#+END_SRC
 
-
+*** Parenthesis
+#+BEGIN_SRC emacs-lisp
 ;; Automatic parenthesis
 (use-package smartparens
   :diminish smartparens-mode
@@ -290,35 +273,25 @@
   :bind ("C-x j" . smartparens-mode)
 )
 
+#+END_SRC
 
-;; Folding
-(use-package hideshow
-  :hook ((prog-mode . hs-minor-mode)))
-
-(defun toggle-fold ()
-  (interactive)
-  (save-excursion
-    (end-of-line)
-    (hs-toggle-hiding)))
-
-
-;;
-(use-package all-the-icons)
-
-
-;; Theme
+** Theming
+*** material-theme
+#+BEGIN_SRC emacs-lisp
 (use-package material-theme
 	:config (load-theme 'material t))
+#+END_SRC
+*** zenburn-theme
+(use-package zenburn-theme
+    :config (load-theme 'zenburn t))
+*** doom-themes
+(use-package doom-themes
+    :config
+    (setq doom-one-brighter-comments t)
+    (load-theme 'doom-vibrant t))
 
-;; (use-package zenburn-theme
-;;   :config (load-theme 'zenburn t))
-
-;; (use-package doom-themes
-;;  :config
-;;    (setq doom-one-brighter-comments t)
-;;    (load-theme 'doom-vibrant t))
-
-
+* Holidays
+#+BEGIN_SRC emacs-lisp
 (setq holiday-general-holidays
       '((holiday-fixed 1 1 "Neujahr")
         (holiday-fixed 5 1 "Tag der Arbeit")
@@ -358,22 +331,21 @@
               (+50 "Pfingstmontag")
               (+60 "Fronleichnam")))))))
 (setq calendar-holidays (append holiday-general-holidays holiday-christian-holidays))
+#+END_SRC
 
-;; init-20-bindings.el  --- keyboard bindings
-;;
-;; Explanations about Emacs special keys
-;;
-;; Notation | Symbolics Keyboard | PC keyboard   | Mac keyboard
-;; C           Control             <ctrl>          <ctrl>
-;; M           Meta                <alt>           <option>
-;; s           Super                               <command>
-;; H           Hyper               <windows>       <fn>
-;; S           Shift               <shift>         <shift>
-;;
+* Keyboard bindings
+** Explanations about Emacs special keys
 
+   Notation | Symbolics Keyboard | PC keyboard   | Mac keyboard
+   C           Control             <ctrl>          <ctrl>
+   M           Meta                <alt>           <option>
+   s           Super                               <command>
+   H           Hyper               <windows>       <fn>
+   S           Shift               <shift>         <shift>
+
+#+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "<f5>") 'speedbar)
 (global-set-key (kbd "<f12>") 'make-frame-command)
-
 
 ;; Bindings to own functions: 
 (defun gcm-scroll-down ()
@@ -397,7 +369,6 @@
     (move-to-column col)))
 (global-set-key (kbd "C-S-d") 'duplicate-line)
 
-
 (defun move-line-down ()
   (interactive)
   (let ((col (current-column)))
@@ -408,7 +379,6 @@
     (move-to-column col)))
 (global-set-key (kbd "C-S-j") 'move-line-down)
 
-
 (defun move-line-up ()
   (interactive)
   (let ((col (current-column)))
@@ -418,23 +388,23 @@
     (forward-line -1)
     (move-to-column col)))
 (global-set-key (kbd "C-S-k") 'move-line-up)
+#+END_SRC
+* More packages
+*** Paradox Package Manager
+    https://github.com/Malabarba/paradox
+#+BEGIN_SRC emacs-lisp
 
-;; init-30-default.el --- load default packages
-;; Copyright (C) 2019 Andreas Wacknitz
-
-
-;; Paradox Package Manager
-;; https://github.com/Malabarba/paradox
 (use-package paradox
   :config
   (progn
     (setq paradox-execute-asynchronously t)
     (setq paradox-automatically-star t)
     (paradox-enable)))
+#+END_SRC
 
-
-;; Dashboard
-;; https://github.com/emacs-dashboard/emacs-dashboard
+*** Dashboard
+    https://github.com/emacs-dashboard/emacs-dashboard
+#+BEGIN_SRC emacs-lisp
 (use-package dashboard
   :config
   (dashboard-setup-startup-hook)
@@ -444,8 +414,10 @@
                           (agenda . 5)
                           (registers . 5))))
 
+#+END_SRC
 
-;; Folding
+*** hideshow
+#+BEGIN_SRC emacs-lisp
 (use-package hideshow
   :hook ((prog-mode . hs-minor-mode)))
 
@@ -454,13 +426,14 @@
   (save-excursion
     (end-of-line)
     (hs-toggle-hiding)))
+#+END_SRC
 
-
-;; Ivy
-;; https://github.com/abo-abo/swiper
-;; Ivy, a generic completion mechanism for Emacs.
-;; Counsel, a collection of Ivy-enhanced versions of common Emacs commands.
-;; Swiper, an Ivy-enhanced alternative to isearch.
+*** Ivy, Counsel, Swiper and Avy
+    https://github.com/abo-abo/swiper
+    Ivy, a generic completion mechanism for Emacs.
+    Counsel, a collection of Ivy-enhanced versions of common Emacs commands.
+    Swiper, an Ivy-enhanced alternative to isearch.
+#+BEGIN_SRC emacs-lisp
 (use-package ivy)
 
 (use-package swiper
@@ -496,18 +469,19 @@
   (ivy-set-actions 'counsel-git-grep
                    '(("j" find-file-other-window "other"))))
 
-;; avy - jump to character
 (use-package avy
   :config
   (avy-setup-default)
   :bind ("M-s" . avy-goto-char))
 
-(use-package ivy-hydra )
+(use-package ivy-hydra)
 (use-package ivy-xref
   :init (setq xref-show-xrefs-function #'ivy-xref-show-xrefs))
+#+END_SRC
 
-
-;; Treat undo history as a tree
+*** undo-tree
+    Treat undo history as a tree
+#+BEGIN_SRC emacs-lisp
 (use-package undo-tree
   :config
   (progn
@@ -515,65 +489,61 @@
     (setq undo-tree-visualizer-timestamps t))
   :diminish undo-tree-mode)
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . sh-mode))
-(winner-mode 1)
-(global-unset-key (kbd "C-z"))
-(put 'upcase-region 'disabled nil)
-(setq require-final-newline t)
-
-
-;; Unobtrusively trim extraneous white-space *ONLY* in lines edited.
+#+END_SRC
+*** ws-butler - unobtrusively trim extraneous white-space *ONLY* in lines edited
+#+BEGIN_SRC emacs-lisp
 (use-package ws-butler
   :diminish ws-butler-mode
   :config
   (progn
     (ws-butler-global-mode 1)
     (setq ws-butler-keep-whitespace-before-point nil)))
-
-
-;; Company is a text completion framework for Emacs. The name stands for "complete anything".
-;; http://company-mode.github.io
+#+END_SRC
+*** Company - a text completion framework for Emacs. The name stands for "complete anything"
+    http://company-mode.github.io
+#+BEGIN_SRC emacs-lisp
 (use-package company
   :diminish company-mode
   :defer 2
   :bind ("C-<tab>" . company-complete)
   :config
   (global-company-mode t))
-
-
-;;
-;;
+#+END_SRC
+*** dired-subtree
+#+BEGIN_SRC emacs-lisp
 (use-package dired-subtree
   :commands (dired-subtree-insert))
+#+END_SRC
 
+*** Projectile - easy project management and navigation
+    https://github.com/bbatsov/projectile
 
-;; Projectile
-;; https://github.com/bbatsov/projectile
-;; Easy project management and navigation.
-;; The concept of a project is pretty basic - just a folder containing special file.
-;; Currently git, mercurial, darcs and bazaar repos are considered projects by default.
-;; So are lein, maven, sbt, scons, rebar and bundler projects.
-;; If you want to mark a folder manually as a project just create an empty .projectile file in it.
-;;Some of Projectile's features:
-;;
-;;    jump to a file in project
-;;    jump to files at point in project
-;;    jump to a directory in project
-;;    jump to a file in a directory
-;;    jump to a project buffer
-;;    jump to a test in project
-;;    toggle between files with same names but different extensions (e.g. .h <-> .c/.cpp, Gemfile <-> Gemfile.lock)
-;;    toggle between code and its test (e.g. main.service.js <-> main.service.spec.js)
-;;    jump to recently visited files in the project
-;;    switch between projects you have worked on
-;;    kill all project buffers
-;;    replace in project
-;;    multi-occur in project buffers
-;;    grep in project
-;;    regenerate project etags or gtags (requires ggtags).
-;;    visit project in dired
-;;    run make in a project with a single key chord
-;;    check for dirty repositories
-;;    toggle read-only mode for the entire project
+    The concept of a project is pretty basic - just a folder containing special file.
+    Currently git, mercurial, darcs and bazaar repos are considered projects by default.
+    So are lein, maven, sbt, scons, rebar and bundler projects.
+    If you want to mark a folder manually as a project just create an empty .projectile file in it.
+    Some of Projectile's features:
+
+    jump to a file in project
+    jump to files at point in project
+    jump to a directory in project
+    jump to a file in a directory
+    jump to a project buffer
+    jump to a test in project
+    toggle between files with same names but different extensions (e.g. .h <-> .c/.cpp, Gemfile <-> Gemfile.lock)
+    toggle between code and its test (e.g. main.service.js <-> main.service.spec.js)
+    jump to recently visited files in the project
+    switch between projects you have worked on
+    kill all project buffers
+    replace in project
+    multi-occur in project buffers
+    grep in project
+    regenerate project etags or gtags (requires ggtags).
+    visit project in dired
+    run make in a project with a single key chord
+    check for dirty repositories
+    toggle read-only mode for the entire project
+#+BEGIN_SRC emacs-lisp
 (use-package projectile
   :commands (projectile-mode)
   :demand
@@ -592,31 +562,31 @@
   (progn
     (projectile-mode +1)
     (counsel-projectile-mode)))
-
-;; init-40-development.el --- Development packages and settings
-;; Copyright (C) 2019 Andreas Wacknitz
-
+#+END_SRC
+** Development
+*** yaml-mode
+#+BEGIN_SRC emacs-lisp
 (use-package yaml-mode :mode "\\.ya?ml$")
-
-
-;; Unix config files mode
+#+END_SRC
+*** conf-mode - UNIX config files
+#+BEGIN_SRC emacs-lisp
 (use-package conf-mode)
-
-
-;; Emacs Lisp files
+#+END_SRC
+*** elisp-format - EMCACS Lisp files
+#+BEGIN_SRC emacs-lisp
 (use-package elisp-format)
-
-
-;; SLIME is the Superior Lisp Interaction Mode for Emacs.
-;; https://github.com/slime/slime
+#+END_SRC
+*** SLIME - superior Lisp Interaction Mode for Emacs.
+    https://github.com/slime/slime
+#+BEGIN_SRC emacs-lisp
 (use-package slime)
     :init
     ;; Set your lisp system and, optionally, some contribs
     (setq inferior-lisp-program "/usr/bin/sbcl")
     (setq slime-contribs '(slime-fancy))
-
-
-;; Markdown
+#+END_SRC
+*** Markdown
+#+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
@@ -625,29 +595,32 @@
   :init (setq markdown-command "multimarkdown")
   :bind (("<f9>" . markdown-preview))
   )
-
-
+#+END_SRC
+*** cmake-mode
+#+BEGIN_SRC emacs-lisp
 (use-package cmake-mode
   :mode "CMakeLists\\.txt\\'")
-
-
+#+END_SRC
+*** docker
+#+BEGIN_SRC emacs-lisp
 (use-package docker
   :commands docker-mode
   :bind ("C-c d" . docker))
 
 (use-package dockerfile-mode
   :mode "Dockerfile.*\\'")
-
-
+#+END_SRC
+*** prolog
+#+BEGIN_SRC emacs-lisp
 (use-package prolog
   :load-path "~/code/emacs/prolog"
   :mode ("\\.pl\\'" . prolog-mode)
   :config
     (setq-default prolog-system 'swi)
     (setq prolog-system 'swi))
-
-
-;; Git
+#+END_SRC
+*** magit
+#+BEGIN_SRC emacs-lisp
 (use-package magit
   :commands magit-status
   :config
@@ -662,9 +635,9 @@
   :after magit
   :disabled
   :config (magithub-feature-autoinject t))
-
-
-;; Syntax checker:
+#+END_SRC
+*** flycheck - syntax checker
+#+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :diminish ""
   :init
@@ -676,13 +649,12 @@
     )
   :config
   (global-flycheck-mode 1))
-
-
-;; Python
+#+END_SRC
+*** Python packages
+#+BEGIN_SRC emacs-lisp
 (use-package py-autopep8
   :init
   (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
-
 
 ;; Use Company for auto-completion interface.
 (defun my/python-mode-hook ()
@@ -710,13 +682,9 @@
           python-shell-interpreter-args "console --simple-prompt"
           python-shell-prompt-detect-failure-warning nil)
     (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter")))
-
-
-;;(load-file "~/.emacs.d/config/init-50-web.el")
-;; init-50-web.el --- Web development packages and settings
-;; Copyright (C) 2019 Andreas Wacknitz
-
-;; Web
+#+END_SRC
+** Web
+#+BEGIN_SRC emacs-lisp
 (use-package web-mode
   :mode "\\.phtml\\'"
   :mode "\\.volt\\'"
@@ -755,8 +723,11 @@
       "Update the font-face after an emmet expantion."
       (font-lock-fontify-buffer))))
 
-
-;; JavaScript
+(use-package nginx-mode
+  :mode "\\.nginx\\'")
+#+END_SRC
+** JavaScript
+#+BEGIN_SRC emacs-lisp
 (use-package js2-mode
   :mode ("\\.js\\'")
   :interpreter "node")
@@ -830,98 +801,91 @@
   (add-hook 'typescript-mode-hook 'company-mode)
   (add-hook 'typescript-mode-hook 'prettier-js-mode))
 
-
 (setq-default typescript-indent-level 2)
+#+END_SRC
+** mu4e
+(use-package mu4e
+;;  :load-path "/usr/share/emacs/site-lisp/mu4e"
+    :commands mu4e
+    :config
+     (use-package mu4e-contrib)
+     (if mail-on
+         (progn
+             (setq mu4e-html2text-command 'mu4e-shr2text)
+             (setq mu4e-context-policy 'pick-first)
+             (setq mu4e-completing-read-function 'ivy-completing-read)
+             (setq message-send-mail-function 'smtpmail-send-it)
+             (setq mu4e-view-html-plaintext-ratio-heuristic 50)
+             (setq mu4e-contexts
+                 (list ((make-mu4e-context
+                      :name "gmx"
+                      :enter-func (lambda () (mu4e-message "Switch to the gmx context"))
+                      :match-func (lambda (msg)
+                          (when msg
+                               (s-prefix? "/gmx" (mu4e-message-field msg :maildir))))
+                      :vars '((user-mail-address . "a.wacknitz@gmx.de")
+                              (mu4e-sent-folder . "/gmx/sent")
+                              (mu4e-drafts-folder . "/gmx/drafts")
+                              (mu4e-trash-folder . "/gmx/trash")
+                              (mu4e-sent-messages-behavior . delete)
+                              (smtpmail-default-smtp-server . "smtp.gmx.net")
+                              (smtpmail-smtp-server . "smtp.gmx.net")
+                              (smtpmail-stream-type . starttls)
+                              (smtpmail-smtp-service . 587)))
+                     (make-mu4e-context
+                         :name "webde"
+                         :enter-func (lambda () (mu4e-message "Switch to web.de context"))
+                         :match-func (lambda (msg)
+                             (when
+                                msg (mu4e-message-contact-field-matches
+                                msg :to "lurge@web.de")))
+                         :vars '((user-mail-address . "lurge@web.de")
+                                (mu4e-sent-folder . "/web/sent")
+                                (mu4e-drafts-folder . "/web/drafts")
+                                (mu4e-sent-messages-behavior . sent)
+                                (smtpmail-default-smtp-server . "smtp.web.de")
+                                (smtpmail-smtp-server . "smtp.web.de")
+                                (smtpmail-stream-type . starttls)
+                                (smtpmail-smtp-service . 587)))))
+             (setq mu4e-maildir "~/mail")
+             (setq mu4e-get-mail-command "mbsync -a")
+             (setq mu4e-update-interval 300)
+             (setq mu4e-view-show-addresses t)
+             (setq mu4e-headers-include-related t)
+             (setq mu4e-headers-show-threads nil)
+             (setq mu4e-headers-skip-duplicates t)
+             (setq mu4e-split-view 'vertical)
+             (setq
+                 user-full-name  "Andreas Wacknitz"
+                 mu4e-compose-signature ""
+                 mu4e-compose-signature-auto-include nil
+                 mu4e-attachment-dir "~/Downloads")
+             (setq mu4e-maildir-shortcuts
+                 '(("/gmx/inbox"     . ?g)
+                 ("/webde/inbox"       . ?w)
+                 ("/purelyfunctional/inbox" . ?p)))
 
+             (setq mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/spam AND NOT maildir:/purelyfunctional/haskell AND NOT maildir:/purelyfunctional/github"
+                 "Unread messages"     ?u)
+                 ("date:today..now"                  "Today's messages"     ?t)
+                 ("date:7d..now"                     "Last 7 days"          ?w)
+                 ("mime:image/*"                     "Messages with images" ?p)
+                 ("maildir:/purelyfunctional/haskell" "haskell" ?h)))
 
-(use-package nginx-mode
-  :mode "\\.nginx\\'")
+             (add-hook 'mu4e-compose-mode-hook 'mml-secure-message-sign)
+             (add-hook 'mu4e-view-mode-hook '(lambda ()
+                 (local-set-key (kbd "<end>") 'end-of-line)
+                 (local-set-key (kbd "<home>") 'beginning-of-line)))
+             (when (fboundp 'imagemagick-register-types)
+                 (imagemagick-register-types))
+                 (add-to-list 'mu4e-view-actions
+                     '("View in browser" . mu4e-action-view-in-browser) t)
 
+                 ;; don't keep message buffers around
+                 (setq message-kill-buffer-on-exit t))))
 
-
-;; (use-package mu4e
-;; ;;  :load-path "/usr/share/emacs/site-lisp/mu4e"
-;;   :commands mu4e
-;;   :config
-;;   (use-package mu4e-contrib)
-;;   (if mail-on
-;;       (progn
-;;         (setq mu4e-html2text-command
-;;               'mu4e-shr2text)
-;;         (setq mu4e-context-policy 'pick-first)
-;;         (setq mu4e-completing-read-function 'ivy-completing-read)
-;;         (setq message-send-mail-function 'smtpmail-send-it)
-;;         (setq mu4e-view-html-plaintext-ratio-heuristic 50)
-;;         (setq mu4e-contexts
-;;               (list ((make-mu4e-context
-;;                      :name "gmx"
-;;                      :enter-func (lambda () (mu4e-message "Switch to the gmx context"))
-;;                      :match-func (lambda (msg)
-;;                                    (when msg
-;;                                      (s-prefix? "/gmx" (mu4e-message-field msg :maildir))))
-;;                      :vars '((user-mail-address . "a.wacknitz@gmx.de")
-;;                              (mu4e-sent-folder . "/gmx/sent")
-;;                              (mu4e-drafts-folder . "/gmx/drafts")
-;;                              (mu4e-trash-folder . "/gmx/trash")
-;;                              (mu4e-sent-messages-behavior . delete)
-;;                              (smtpmail-default-smtp-server . "smtp.gmx.net")
-;;                              (smtpmail-smtp-server . "smtp.gmx.net")
-;;                              (smtpmail-stream-type . starttls)
-;;                              (smtpmail-smtp-service . 587)))
-;;                     (make-mu4e-context
-;;                      :name "webde"
-;;                      :enter-func (lambda () (mu4e-message "Switch to web.de context"))
-;;                      :match-func (lambda (msg)
-;;                                    (when
-;;                                        msg (mu4e-message-contact-field-matches
-;;                                             msg :to "lurge@web.de")))
-;;                      :vars '((user-mail-address . "lurge@web.de")
-;;                              (mu4e-sent-folder . "/web/sent")
-;;                              (mu4e-drafts-folder . "/web/drafts")
-;;                              (mu4e-sent-messages-behavior . sent)
-;;                              (smtpmail-default-smtp-server . "smtp.web.de")
-;;                              (smtpmail-smtp-server . "smtp.web.de")
-;;                              (smtpmail-stream-type . starttls)
-;;                              (smtpmail-smtp-service . 587)))))
-;;         (setq mu4e-maildir "~/mail")
-;;         (setq mu4e-get-mail-command "mbsync -a")
-;;         (setq mu4e-update-interval 300)
-;;         (setq mu4e-view-show-addresses t)
-;;         (setq mu4e-headers-include-related t)
-;;         (setq mu4e-headers-show-threads nil)
-;;         (setq mu4e-headers-skip-duplicates t)
-;;         (setq mu4e-split-view 'vertical)
-;;         (setq
-;;          user-full-name  "Andreas Wacknitz"
-;;          mu4e-compose-signature ""
-;;          mu4e-compose-signature-auto-include nil
-;;          mu4e-attachment-dir "~/Downloads")
-;;         (setq mu4e-maildir-shortcuts
-;;               '(("/gmx/inbox"     . ?g)
-;;                 ("/webde/inbox"       . ?w)
-;;                 ("/purelyfunctional/inbox" . ?p)))
-
-;;         (setq mu4e-bookmarks '(("flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/spam AND NOT maildir:/purelyfunctional/haskell AND NOT maildir:/purelyfunctional/github"
-;;                                 "Unread messages"     ?u)
-;;                                ("date:today..now"                  "Today's messages"     ?t)
-;;                                ("date:7d..now"                     "Last 7 days"          ?w)
-;;                                ("mime:image/*"                     "Messages with images" ?p)
-;;                                ("maildir:/purelyfunctional/haskell" "haskell" ?h)))
-
-;;         (add-hook 'mu4e-compose-mode-hook 'mml-secure-message-sign)
-;;         (add-hook 'mu4e-view-mode-hook '(lambda ()
-;;                                           (local-set-key (kbd "<end>") 'end-of-line)
-;;                                           (local-set-key (kbd "<home>") 'beginning-of-line)))
-;;         (when (fboundp 'imagemagick-register-types)
-;;           (imagemagick-register-types))
-;;         (add-to-list 'mu4e-view-actions
-;;                      '("View in browser" . mu4e-action-view-in-browser) t)
-
-;;         ;; don't keep message buffers around
-;;         (setq message-kill-buffer-on-exit t))))
-
-
-;; org mode, markdown on steroids
+** org - markdown on steroids
+#+BEGIN_SRC emacs-lisp
 (use-package org
   :ensure t
   :mode ("\\.org\\'" . org-mode)
@@ -972,9 +936,9 @@
   :ensure t
   :commands (org-bullets-mode)
   :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-
-
-;; PDF Tools
+#+END_SRC
+** PDF Tools
+#+BEGIN_SRC emacs-lisp
 (use-package pdf-tools
   ;;:pin manual ;; manually update
   :magic ("%PDF" . pdf-view-mode)
@@ -986,8 +950,9 @@
   ;; use normal isearch
   (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward))
 
-
-;; LaTeX
+#+END_SRC
+** LaTeX
+#+BEGIN_SRC emacs-lisp
 (use-package tex-site
    :ensure auctex
    :mode ("\\.tex\\'" . latex-mode)
@@ -1003,9 +968,9 @@
     (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook #'TeX-revert-document-buffer)
     ;; to use pdfview with auctex
     (add-hook 'LaTeX-mode-hook 'pdf-tools-install))
-
-
-
+#+END_SRC
+* OS dependent settings and packages
+#+BEGIN_SRC emacs-lisp
 (cond
  ((string-equal system-type "gnu/linux")
   (progn
@@ -1198,8 +1163,9 @@
       :after treemacs magit)
     ))
  )
-
-
+#+END_SRC
+* Server
+#+BEGIN_SRC emacs-lisp
 (use-package server
   :config
   (progn
@@ -1207,5 +1173,4 @@
       (unless (server-running-p)
         (server-start)))
     (add-hook 'after-init-hook 'server-enable t)))
-
 #+END_SRC
