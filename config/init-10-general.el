@@ -192,22 +192,31 @@
 (setq save-interprogram-paste-before-kill t
       mouse-yank-at-point t)
 
-
+;; Winner Mode allows you to “undo” (and “redo”) changes in the window configuration with the key commands ‘C-c left’ and ‘C-c right’.
 (setq winner-mode 1)
 (defalias 'list-buffers 'ibuffer)
+
+;; ace-window: Enhance windows support (try C-X3, C-X3, C-Xo)
+(use-package ace-window
+  :init
+  (global-set-key [remap other-window] 'ace-window)
+  (custom-set-faces
+   '(aw-leading-char-face
+     ((t (:inherit ace-jump-face-background :height 3.0))))))
 
 
 ;; Ido - Interactively do things
 ;; show any name that has the chars I typed
-(use-package ido
-  :init
-  (setq ido-enable-flex-matching t)
-  (setq ido-everywhere t)
-  (ido-mode 1)
-  (setq ido-create-new-buffer 'always) ;; other choices are prompt and never
-  (setq ido-file-extensions-order '(".org" ".txt" ".py" ".emacs" ".xml" ".el" ".ini"))
-  (setq ido-ignore-extensions t)       ;; to make Ido use completion-ignored-extensions
-  (setq ido-use-filename-at-point 'guess))
+;;  I don't use this because I prefer swiper:
+;; (use-package ido
+;;   :init
+;;   (setq ido-enable-flex-matching t)
+;;   (setq ido-everywhere t)
+;;   (ido-mode 1)
+;;   (setq ido-create-new-buffer 'always) ;; other choices are prompt and never
+;;   (setq ido-file-extensions-order '(".org" ".txt" ".py" ".emacs" ".xml" ".el" ".ini"))
+;;   (setq ido-ignore-extensions t)       ;; to make Ido use completion-ignored-extensions
+;;   (setq ido-use-filename-at-point 'guess))
 
 
 ;; helpful as an alternative help system
@@ -295,11 +304,13 @@
 (use-package material-theme
 	:config (load-theme 'material t))
 
-;;(use-package doom-themes
+;; (use-package zenburn-theme
+;;   :config (load-theme 'zenburn t))
+
+;; (use-package doom-themes
 ;;  :config
-;;  (progn
 ;;    (setq doom-one-brighter-comments t)
-;;    (load-theme 'doom-vibrant t)))
+;;    (load-theme 'doom-vibrant t))
 
 
 (setq holiday-general-holidays

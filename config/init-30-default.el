@@ -62,18 +62,24 @@
          ("C-h v" . counsel-describe-variable)
          ("C-h i" . counsel-info-lookup-symbol)
          ("C-h u" . counsel-unicode-char)
-         ("C-c k" . counsel-rg)
+         ("C-c k" . counsel-ag)
          ("C-x l" . counsel-locate)
          ("C-c g" . counsel-git-grep)
          ("C-c h i" . counsel-imenu)
          ("C-x p" . counsel-list-processes))
-  :init (counsel-mode)
+  :init (counsel-mode 1)
   :config
   (ivy-set-actions
            'counsel-find-file
            '(("j" find-file-other-window "other")))
   (ivy-set-actions 'counsel-git-grep
                    '(("j" find-file-other-window "other"))))
+
+;; avy - jump to character
+(use-package avy
+  :config
+  (avy-setup-default)
+  :bind ("M-s" . avy-goto-char))
 
 (use-package ivy-hydra )
 (use-package ivy-xref
@@ -99,7 +105,7 @@
   :diminish ws-butler-mode
   :config
   (progn
-    (ws-butler-global-mode)
+    (ws-butler-global-mode 1)
     (setq ws-butler-keep-whitespace-before-point nil)))
 
 
@@ -121,7 +127,7 @@
 
 ;; Projectile
 ;; https://github.com/bbatsov/projectile
-;; This library provides easy project management and navigation.
+;; Easy project management and navigation.
 ;; The concept of a project is pretty basic - just a folder containing special file.
 ;; Currently git, mercurial, darcs and bazaar repos are considered projects by default.
 ;; So are lein, maven, sbt, scons, rebar and bundler projects.
