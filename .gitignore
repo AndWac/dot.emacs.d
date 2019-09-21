@@ -57,3 +57,5 @@ custom.el
 # File generated from my org file:
 myinit.el
 
+# 
+.python-environments

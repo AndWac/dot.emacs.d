@@ -3,7 +3,6 @@
 (setq user-full-name "Andreas Wacknitz")
 (setq user-mail-address "a.wacknitz@gmx.de")
 #+END_SRC
-
 * UTF-8
 #+BEGIN_SRC emacs-lisp
 (set-language-environment "UTF-8")   ; Set input
@@ -13,7 +12,6 @@
 (set-selection-coding-system 'utf-8) ; please
 (prefer-coding-system 'utf-8)        ; with sugar on top
 #+END_SRC
-
 * use-package tweaks
 #+BEGIN_SRC emacs-lisp
 (setq use-package-always-ensure t)  ;; Set the default to automatically install packages if they are not availably yet.
@@ -22,7 +20,17 @@
 ;; diminish - remove minor mode strings in the mode-line:
 (use-package diminish)
 #+END_SRC
-
+* Functions
+#+BEGIN_SRC emacs-lisp
+(defun view-pretty-json (begin)
+  (interactive "d")
+  (let ((buffer (current-buffer))
+        (end (save-excursion (forward-sexp) (point))))
+    (switch-to-buffer (generate-new-buffer "*json*"))
+    (insert-buffer-substring buffer begin end)
+    (json-pretty-print (point-min) (point-max))
+    (goto-char (point-min))))
+#+END_SRC
 * Interface tweaks
 #+BEGIN_SRC emacs-lisp
 ;;(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))    ;; Remove menu bar
@@ -289,50 +297,6 @@
     :config
     (setq doom-one-brighter-comments t)
     (load-theme 'doom-vibrant t))
-
-* Holidays
-#+BEGIN_SRC emacs-lisp
-(setq holiday-general-holidays
-      '((holiday-fixed 1 1 "Neujahr")
-        (holiday-fixed 5 1 "Tag der Arbeit")
-        (holiday-fixed 10 3 "Tag der deutschen Einheit")))
-(setq holiday-christian-holidays
-      '((holiday-fixed 12 25 "1. Weihnachtstag")
-        (holiday-fixed 12 26 "2. Weihnachtstag")
-        (holiday-fixed 1 6 "Heilige 3 Könige")
-        (holiday-fixed 10 31 "Reformationstag")
-        (holiday-fixed 11 1 "Allerheiligen")
-        ;; Date of Easter calculation taken from holidays.el.
-        (let* ((century (1+ (/ displayed-year 100)))
-               (shifted-epact (% (+ 14 (* 11 (% displayed-year 19))
-                                    (- (/ (* 3 century) 4))
-                                    (/ (+ 5 (* 8 century)) 25)
-                                    (* 30 century))
-                                 30))
-               (adjusted-epact (if (or (= shifted-epact 0)
-                                       (and (= shifted-epact 1)
-                                            (< 10 (% displayed-year 19))))
-                                   (1+ shifted-epact)
-                                 shifted-epact))
-               (paschal-moon (- (calendar-absolute-from-gregorian
-                                 (list 4 19 displayed-year))
-                                adjusted-epact))
-               (easter (calendar-dayname-on-or-before 0 (+ paschal-moon 7))))
-          (holiday-filter-visible-calendar
-           (mapcar
-            (lambda (l)
-              (list (calendar-gregorian-from-absolute (+ easter (car l)))
-                    (nth 1 l)))
-            '(( -2 "Karfreitag")
-              (  0 "Ostersonntag")
-              ( +1 "Ostermontag")
-              (+39 "Christi Himmelfahrt")
-              (+49 "Pfingstsonntag")
-              (+50 "Pfingstmontag")
-              (+60 "Fronleichnam")))))))
-(setq calendar-holidays (append holiday-general-holidays holiday-christian-holidays))
-#+END_SRC
-
 * Keyboard bindings
 ** Explanations about Emacs special keys
 
@@ -342,52 +306,10 @@
    s           Super                               <command>
    H           Hyper               <windows>       <fn>
    S           Shift               <shift>         <shift>
-
+** settings
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "<f5>") 'speedbar)
 (global-set-key (kbd "<f12>") 'make-frame-command)
-
-;; Bindings to own functions: 
-(defun gcm-scroll-down ()
-  (interactive)
-  (scroll-up 4))
-(defun gcm-scroll-up ()
-  (interactive)
-  (scroll-down 4))
-(global-set-key (kbd "M-p") 'gcm-scroll-up)
-(global-set-key (kbd "M-n") 'gcm-scroll-down)
-
-
-(defun duplicate-line ()
-  (interactive)
-  (let ((col (current-column)))
-    (move-beginning-of-line 1)
-    (kill-line)
-    (yank)
-    (newline)
-    (yank)
-    (move-to-column col)))
-(global-set-key (kbd "C-S-d") 'duplicate-line)
-
-(defun move-line-down ()
-  (interactive)
-  (let ((col (current-column)))
-    (save-excursion
-      (forward-line)
-      (transpose-lines 1))
-    (forward-line)
-    (move-to-column col)))
-(global-set-key (kbd "C-S-j") 'move-line-down)
-
-(defun move-line-up ()
-  (interactive)
-  (let ((col (current-column)))
-    (save-excursion
-      (forward-line)
-      (transpose-lines -1))
-    (forward-line -1)
-    (move-to-column col)))
-(global-set-key (kbd "C-S-k") 'move-line-up)
 #+END_SRC
 * More packages
 *** Paradox Package Manager
@@ -949,7 +871,6 @@
   (setq-default pdf-view-display-size 'fit-width)
   ;; use normal isearch
   (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward))
-
 #+END_SRC
 ** LaTeX
 #+BEGIN_SRC emacs-lisp
@@ -1163,6 +1084,49 @@
       :after treemacs magit)
     ))
  )
+#+END_SRC
+
+* Holidays
+#+BEGIN_SRC emacs-lisp
+(setq holiday-general-holidays
+      '((holiday-fixed 1 1 "Neujahr")
+        (holiday-fixed 5 1 "Tag der Arbeit")
+        (holiday-fixed 10 3 "Tag der deutschen Einheit")))
+(setq holiday-christian-holidays
+      '((holiday-fixed 12 25 "1. Weihnachtstag")
+        (holiday-fixed 12 26 "2. Weihnachtstag")
+        (holiday-fixed 1 6 "Heilige 3 Könige")
+        (holiday-fixed 10 31 "Reformationstag")
+        (holiday-fixed 11 1 "Allerheiligen")
+        ;; Date of Easter calculation taken from holidays.el.
+        (let* ((century (1+ (/ displayed-year 100)))
+               (shifted-epact (% (+ 14 (* 11 (% displayed-year 19))
+                                    (- (/ (* 3 century) 4))
+                                    (/ (+ 5 (* 8 century)) 25)
+                                    (* 30 century))
+                                 30))
+               (adjusted-epact (if (or (= shifted-epact 0)
+                                       (and (= shifted-epact 1)
+                                            (< 10 (% displayed-year 19))))
+                                   (1+ shifted-epact)
+                                 shifted-epact))
+               (paschal-moon (- (calendar-absolute-from-gregorian
+                                 (list 4 19 displayed-year))
+                                adjusted-epact))
+               (easter (calendar-dayname-on-or-before 0 (+ paschal-moon 7))))
+          (holiday-filter-visible-calendar
+           (mapcar
+            (lambda (l)
+              (list (calendar-gregorian-from-absolute (+ easter (car l)))
+                    (nth 1 l)))
+            '(( -2 "Karfreitag")
+              (  0 "Ostersonntag")
+              ( +1 "Ostermontag")
+              (+39 "Christi Himmelfahrt")
+              (+49 "Pfingstsonntag")
+              (+50 "Pfingstmontag")
+              (+60 "Fronleichnam")))))))
+(setq calendar-holidays (append holiday-general-holidays holiday-christian-holidays))
 #+END_SRC
 * Server
 #+BEGIN_SRC emacs-lisp
