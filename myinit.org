@@ -585,11 +585,6 @@
 #+END_SRC
 *** Python packages
 #+BEGIN_SRC emacs-lisp
-  (use-package py-autopep8
-    :init
-    (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
-    )
-
   (use-package jedi
     :init
     (add-hook 'python-mode-hook 'jedi:setup)
@@ -616,6 +611,15 @@
                 python-shell-prompt-detect-failure-warning nil)
           (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter"))))
     )
+  
+(use-package py-autopep8
+    :init
+    (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
+
+(use-package yasnippet
+    :init
+    (yas-global-mode 1))
+(use-package yasnippet-snippets)
 #+END_SRC
 ** Web
 #+BEGIN_SRC emacs-lisp
