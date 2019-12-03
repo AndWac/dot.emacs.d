@@ -313,6 +313,36 @@
     (setq doom-one-brighter-comments t)
     (load-theme 'doom-vibrant t))
 * More packages
+*** Tramp
+TRAMP is a package providing an abstraction layer that can be used for accessing remote files on different machines.
+I say "abstraction layer" because it's not just a simple library for reading and writing files,
+it hooks into Emacs at a low enough level that other packages need not be aware of it in order to use it.
+
+TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
+#+BEGIN_SRC emacs-lisp
+  (use-package tramp
+    :defer 5
+    :config
+    (with-eval-after-load 'tramp-cache
+      (setq tramp-persistency-file-name "~/.emacs.d/tramp"))
+    (setq ;TODO:ramp-default-method "ssh"
+     tramp-default-user-alist '(("\\`su\\(do\\)?\\'" nil "root"))
+     tramp-adb-program "adb"
+     ;; use the settings in ~/.ssh/config instead of Tramp's
+     tramp-use-ssh-controlmaster-options nil
+     ;; don't generate backups for remote files opened as root (security hazzard)
+     backup-enable-predicate
+     (lambda (name)
+       (and (normal-backup-enable-predicate name)
+            (not (let ((method (file-remote-p name 'method)))
+                   (when (stringp method)
+                     (member method '("su" "sudo")))))))))
+
+  ;;  (use-package tramp-sh
+  ;;    :config
+  ;;    (add-to-list 'tramp-remote-path "/usr/local/sbin")
+  ;;    (add-to-list 'tramp-remote-path "~/bin")))
+#+END_SRC
 *** Paradox Package Manager
     https://github.com/Malabarba/paradox
 #+BEGIN_SRC emacs-lisp
@@ -604,6 +634,9 @@
       :init (yas-global-mode 1))
   (use-package yasnippet-snippets)
 #+END_SRC
+*** Anything else
+#+BEGIN_SRC
+#+END_SRC
 ** Web
 #+BEGIN_SRC emacs-lisp
   (use-package web-mode
@@ -821,6 +854,16 @@
     (use-package org-bullets
       :commands (org-bullets-mode)
       :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+    (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((plantuml . t))) ; this line activates dot
+
+    (setq org-plantuml-jar-path (expand-file-name "~/bin/plantuml.jar"))
+
+    (use-package org-ql)
+
+    (use-package htmlize)
 #+END_SRC
 ** PDF Tools
 #+BEGIN_SRC emacs-lisp
@@ -1093,5 +1136,8 @@
 #+BEGIN_SRC emacs-lisp
   (use-package server
     :config
-    (unless (server-running-p) (server-start)))
+    (defun server-enable ()
+      (unless (server-running-p)
+        (server-start))
+      (add-hook 'after-init-hook 'server-enable t)))
 #+END_SRC
