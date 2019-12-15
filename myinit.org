@@ -5,19 +5,19 @@
 #+END_SRC
 * UTF-8
 #+BEGIN_SRC emacs-lisp
-(set-language-environment "UTF-8")   ; Set input
-(setq locale-coding-system 'utf-8)   ; pretty
-(set-terminal-coding-system 'utf-8)  ; pretty
-(set-keyboard-coding-system 'utf-8)  ; pretty
-(set-selection-coding-system 'utf-8) ; please
-(prefer-coding-system 'utf-8)        ; with sugar on top
+  (set-language-environment 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+  (setq locale-coding-system 'utf-8)
 #+END_SRC
 * use-package tweaks
 #+BEGIN_SRC emacs-lisp
-;; Set the default to automatically install packages if they are not availably yet.
-(setq use-package-always-ensure t)
-(eval-when-compile
-  (require 'use-package))
+  ;; Set the default to automatically install packages if they are not availably yet.
+  (setq use-package-always-ensure t)
+  (eval-when-compile
+    (require 'use-package))
 #+END_SRC
 * Keyboard bindings
 ** Explanations about Emacs special keys
@@ -25,7 +25,7 @@
 |----------+--------------------+-------------+--------------|
 | C        | Control            | <ctrl>      | <ctrl>       |
 | M        | Meta               | <alt>       | <option>     |
-| s        | Super              | <command>   |              |
+| s        | Super              |             | <command>    |
 | H        | Hyper              | <windows>   | <fn>         |
 | S        | Shift              | <shift>     | <shift>      |
 ** settings
@@ -100,7 +100,8 @@
   ;; Automatically update buffers if file content on the disk has changed.
   (global-auto-revert-mode t)
 
-  (setq gc-cons-threshold (* 100 1024 1024)) ;; Reduce the frequency of garbage collection (default is 0.76MB, this sets it to 100 MB)
+  ;; Reduce the frequency of garbage collection (default is 0.76MB, this sets it to 100 MB)
+  (setq gc-cons-threshold (* 100 1024 1024))
   (setq show-paren-delay 0)                  ;; Show matching parens
   (show-paren-mode 1)
   (save-place-mode t)                        ;; Save places
@@ -130,7 +131,7 @@
   (setq mouse-wheel-scroll-amount '(1 ((shift) .1))) ;; one line at a time
   (setq scroll-conservatively 10000)                 ;; Scrol one line when hitting bottom of window
 
-  (setq browse-url-browser-function 'browse-url-xdg-open)  ;; Browser
+  (setq browse-url-browser-function 'browse-url-xdg-open)
 
   ;; eval-expression-print-level needs to be set to nil (turned off) so
   ;; that you can always see what's happening.
@@ -164,52 +165,12 @@
   ;; Highlight line on point.
   (global-hl-line-mode t))
 #+END_SRC
-*** Better interaction with X clipboard
-#+BEGIN_SRC emacs-lisp
-(setq-default
-  ;; Makes killing/yanking interact with the clipboard.
-  x-select-enable-clipboard t
-
-  ;; To understand why this is done, read `X11 Copy & Paste to/from Emacs' section here:
-  ;; https://www.emacswiki.org/emacs/CopyAndPaste.
-  x-select-enable-primary t
-
-  ;; Save clipboard strings into kill ring before replacing them. When
-  ;; one selects something in another program to paste it into Emacs, but
-  ;; kills something in Emacs before actually pasting it, this selection
-  ;; is gone unless this variable is non-nil.
-  save-interprogram-paste-before-kill t
-
-  ;; Shows all options when running apropos. For more info,
-  ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Apropos.html.
-  apropos-do-all t
-
-  ;; Mouse yank commands yank at point instead of at click.
-  mouse-yank-at-point t)
-#+END_SRC
 *** Font settings
 #+BEGIN_SRC emacs-lisp
   (if window-system
       (if (> (x-display-pixel-height) 1200)
           (set-frame-font "Fira Code 20" nil t)
         (set-frame-font "Fira Code 15" nil t)))
-#+END_SRC
-*** telephone-line
-#+BEGIN_SRC emacs-lisp
-  (use-package telephone-line
-    :config
-    (setq telephone-line-lhs
-          '((evil   . (telephone-line-evil-tag-segment))
-            (accent . (telephone-line-vc-segment
-                       telephone-line-erc-modified-channels-segment
-                       telephone-line-process-segment))
-            (nil    . (telephone-line-minor-mode-segment
-                       telephone-line-buffer-segment))))
-    (setq telephone-line-rhs
-          '((nil    . (telephone-line-misc-info-segment))
-            (accent . (telephone-line-major-mode-segment))
-            (evil   . (telephone-line-airline-position-segment))))
-    (telephone-line-mode t))
 #+END_SRC
 *** Set frame size
 #+BEGIN_SRC emacs-lisp
@@ -221,9 +182,25 @@
               (add-to-list 'default-frame-alist (cons 'width 120))
             (add-to-list 'default-frame-alist (cons 'width 80)))
           (add-to-list 'default-frame-alist
-                      (cons 'height (/ (- (x-display-pixel-height) 320)
-                                          (frame-char-height)))))))
+                      (cons 'height (min 38 (/ (- (x-display-pixel-height) 320)
+                                          (frame-char-height))))))))
   (set-frame-size-according-to-resolution)
+#+END_SRC
+*** Icons
+#+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons)
+
+  ;; https://github.com/ryuslash/mode-icons
+  (use-package mode-icons
+    :config
+    (mode-icons-mode))
+#+END_SRC
+*** telephone-line
+    Better mode line
+#+BEGIN_SRC emacs-lisp
+  (use-package powerline
+    :config
+    (powerline-center-theme))
 #+END_SRC
 *** pretty - base set of pretty symbols.
 #+BEGIN_SRC emacs-lisp
@@ -264,23 +241,12 @@
 #+END_SRC
 *** ido - Interactively do things
     I don't use this because I prefer swiper:
-*** Which Key
-#+BEGIN_SRC emacs-lisp
-(use-package which-key
-  :init
-  (setq which-key-separator " ")
-  (setq which-key-prefix-prefix "+")
-  :config
-  (which-key-mode 1))
-#+END_SRC
-
 *** rainbow-delimiters - parenthesis change color depending on depth
 #+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
   :defer t
   :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 #+END_SRC
-
 *** rainbox-blocks - understand Clojure/Lisp code at a glance using block highlighting.
 #+BEGIN_SRC emacs-lisp
 (use-package rainbow-blocks
@@ -288,6 +254,40 @@
   :init (add-hook 'clojure-mode-hook 'rainbow-blocks-mode))
 #+END_SRC
 
+*** highlight-symbol
+    Quickly highlight a symbol throughout the buffer and cycle through its locations.
+#+BEGIN_SRC emacs-lisp
+(use-package highlight-symbol
+  :config
+  (add-hook 'prog-mode-hook 'highlight-symbol-mode)
+  (set-face-background 'highlight-symbol-face "#a45bad")
+  (setq highlight-symbol-idle-delay 0.5)
+  :bind (("M-n" . highlight-symbol-next)
+         ("M-p" . highlight-symbol-prev)))
+#+END_SRC
+*** Better interaction with X clipboard
+#+BEGIN_SRC emacs-lisp
+(setq-default
+  ;; Makes killing/yanking interact with the clipboard.
+  x-select-enable-clipboard t
+
+  ;; To understand why this is done, read `X11 Copy & Paste to/from Emacs' section here:
+  ;; https://www.emacswiki.org/emacs/CopyAndPaste.
+  x-select-enable-primary t
+
+  ;; Save clipboard strings into kill ring before replacing them. When
+  ;; one selects something in another program to paste it into Emacs, but
+  ;; kills something in Emacs before actually pasting it, this selection
+  ;; is gone unless this variable is non-nil.
+  save-interprogram-paste-before-kill t
+
+  ;; Shows all options when running apropos. For more info,
+  ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Apropos.html.
+  apropos-do-all t
+
+  ;; Mouse yank commands yank at point instead of at click.
+  mouse-yank-at-point t)
+#+END_SRC
 *** Parenthesis
 #+BEGIN_SRC emacs-lisp
   ;; Automatic parenthesis
@@ -319,35 +319,89 @@
 #+END_SRC
 
 * Theming
-*** Icons
-#+BEGIN_SRC emacs-lisp
-  (use-package all-the-icons)
-
-  ;; https://github.com/ryuslash/mode-icons
-  (use-package mode-icons
-    :config
-    (mode-icons-mode))
-#+END_SRC
 *** material-theme
 #+BEGIN_SRC emacs-lisp
-;;(use-package material-theme
-;;	:config (load-theme 'material t))
+  (use-package material-theme
+    :config (load-theme 'material t))
 #+END_SRC
-*** zenburn-theme
-(use-package zenburn-theme
-    :config (load-theme 'zenburn t))
 *** doom-themes
-(use-package doom-themes
+##+BEGIN_SRC emacs-lisp
+  (use-package doom-themes
     :config
-    (setq doom-one-brighter-comments t)
     (load-theme 'doom-vibrant t))
+##+END_SRC
 *** spacemacs-theme
+##+BEGIN_SRC emacs-lisp
+  (use-package ewal-spacemacs-themes
+    :config
+    (setq spacemacs-theme-comment-bg nil
+          spacemacs-theme-comment-italic t)
+    (load-theme 'spacemacs-dark t))
+##+END_SRC
+* General
+*** uniquify
+uniquify overrides Emacs’ default mechanism for making buffer names unique (using suffixes like <2>, <3> etc.)
+with a more sensible behaviour which use parts of the file names to make the buffer names distinguishable.
+
+For instance, buffers visiting “/u/mernst/tmp/Makefile" and "/usr/projects/zaphod/Makefile” would be named
+“Makefile|tmp” and “Makefile|zaphod”, respectively (instead of “Makefile” and “Makefile<2>”).
+Other buffer name styles are also available.
+
+uniquify is distributed with GnuEmacs.
 #+BEGIN_SRC emacs-lisp
-(use-package spacemacs-theme
-  :defer t
-  :init (load-theme 'spacemacs-dark t))
+  (use-package uniquify-files)
 #+END_SRC
-* More packages
+*** recentf
+Recentf is a minor mode that builds a list of recently opened files. This list is is automatically saved
+across sessions on exiting Emacs - you can then access this list through a command or the menu.
+#+BEGIN_SRC emacs-lisp
+  (use-package recentf
+    :config
+    (setq recentf-max-saved-items 25
+          recentf-max-menu-items 25
+          recentf-save-file (concat user-emacs-directory ".recentf"))
+    (recentf-mode t)
+    :init
+    (global-set-key (kbd "C-x C-r") 'recentf-open-files)
+    )
+#+END_SRC
+*** Which Key
+    Prompt the next possible key bindings after a short wait.
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :config
+    (which-key-mode t)
+    :diminish nil)
+#+END_SRC
+*** esup
+    Emacs Start Up Profiler (esup) benchmarks Emacs startup time without leaving Emacs.
+    https://github.com/jschaf/esup
+#+BEGIN_SRC emacs-lisp
+  (use-package esup)
+#+END_SRC
+*** Dashboard
+    https://github.com/emacs-dashboard/emacs-dashboard
+#+BEGIN_SRC emacs-lisp
+  (use-package dashboard
+    :config
+    (dashboard-setup-startup-hook)
+    :init
+    (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
+    ;; Set the banner
+    (setq dashboard-startup-banner 'logo)
+    ;; Value can be
+    ;; 'official which displays the official emacs logo
+    ;; 'logo which displays an alternative emacs logo
+    ;; 1, 2 or 3 which displays one of the text banners
+    ;; "path/to/your/image.png" which displays whatever image you would prefer
+
+    ;; Content is not centered by default. To center, set
+    (setq dashboard-center-content t)
+
+    ;; To disable shortcut "jump" indicators for each section, set
+    ;;(setq dashboard-show-shortcuts nil)
+    )
+#+END_SRC
 *** Tramp
 TRAMP is a package providing an abstraction layer that can be used for accessing remote files on different machines.
 I say "abstraction layer" because it's not just a simple library for reading and writing files,
@@ -384,19 +438,6 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     (setq paradox-automatically-star t)
     (paradox-enable))
 #+END_SRC
-
-*** Dashboard
-    https://github.com/emacs-dashboard/emacs-dashboard
-#+BEGIN_SRC emacs-lisp
-(use-package dashboard
-  :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-items '((recents  . 5)
-                          (bookmarks . 5)
-                          (projects . 5)
-                          (agenda . 5)
-                          (registers . 5))))
-#+END_SRC
 *** hideshow
 #+BEGIN_SRC emacs-lisp
 (use-package hideshow
@@ -420,10 +461,10 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     :diminish ivy-mode
     :bind
     (("C-r" . swiper)
-      ("C-c C-r" . ivy-resume)
-      ("C-c h m" . woman)
-      ("C-x b" . ivy-switch-buffer)
-      ("C-c u" . swiper-all))
+     ("C-c C-r" . ivy-resume)
+     ("C-c h m" . woman)
+     ("C-x b" . ivy-switch-buffer)
+     ("C-c u" . swiper-all))
     :config
     (ivy-mode 1)
     (setq ivy-use-virtual-buffers t))
@@ -432,24 +473,46 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     :commands (counsel-mode)
     :bind
     (("C-s" . counsel-grep-or-swiper)
-      ("M-x" . counsel-M-x)
-      ("C-x C-f" . counsel-find-file)
-      ("C-h f" . counsel-describe-function)
-      ("C-h v" . counsel-describe-variable)
-      ("C-h i" . counsel-info-lookup-symbol)
-      ("C-h u" . counsel-unicode-char)
-      ("C-c k" . counsel-ag)
-      ("C-x l" . counsel-locate)
-      ("C-c g" . counsel-git-grep)
-      ("C-c h i" . counsel-imenu)
-      ("C-x p" . counsel-list-processes))
+     ("M-x" . counsel-M-x)
+     ("C-x C-f" . counsel-find-file)
+     ("C-h f" . counsel-describe-function)
+     ("C-h v" . counsel-describe-variable)
+     ("C-h i" . counsel-info-lookup-symbol)
+     ("C-h l" . counsel-find-library)
+     ("C-h u" . counsel-unicode-char)
+     ("C-c k" . counsel-ag)
+     ("C-x l" . counsel-locate)
+     ("C-c g" . counsel-git)
+     ("C-c j" . counsel-git-grep)
+     ("C-c h i" . counsel-imenu)
+     ("C-S-o" . 'counsel-rhythmbox)
+     ("C-x p" . counsel-list-processes))
     :init (counsel-mode 1)
     :config
+    ;; set action options during execution of counsel-find-file
+    ;; replace "frame" with window to open in new window
     (ivy-set-actions
-      'counsel-find-file
-      '(("j" find-file-other-window "other")))
-    (ivy-set-actions 'counsel-git-grep
-                      '(("j" find-file-other-window "other"))))
+     'counsel-find-file
+     '(
+       ("j" find-file-other-window "other")
+       ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
+       ("x" counsel-find-file-extern "open externally")
+       ("d" delete-file "delete")
+       ("r" counsel-find-file-as-root "open as root") ))
+
+    ;; set actions when running C-x b
+    ;; replace "frame" with window to open in new window
+    (ivy-set-actions
+     'ivy-switch-buffer
+     '(
+       ("j" switch-to-buffer-other-frame "other frame")
+       ("k" kill-buffer "kill")
+       ("r" ivy--rename-buffer-action "rename")))
+
+    (ivy-set-actions
+     'counsel-git-grep
+     '(
+       ("j" find-file-other-window "other") )))
 
   (use-package avy
     :config
@@ -460,24 +523,6 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
   (use-package ivy-xref
     :init (setq xref-show-xrefs-function #'ivy-xref-show-xrefs))
 #+END_SRC
-*** undo-tree
-    Treat undo history as a tree
-#+BEGIN_SRC emacs-lisp
-  (use-package undo-tree
-    :config
-    (global-undo-tree-mode)
-    (setq undo-tree-visualizer-timestamps t)
-    :diminish undo-tree-mode)
-  (add-to-list 'auto-mode-alist '("\\.zsh\\'" . sh-mode))
-#+END_SRC
-*** ws-butler - unobtrusively trim extraneous white-space *ONLY* in lines edited
-#+BEGIN_SRC emacs-lisp
-  (use-package ws-butler
-    :diminish ws-butler-mode
-    :config
-    (ws-butler-global-mode 1)
-    (setq ws-butler-keep-whitespace-before-point nil))
-#+END_SRC
 *** Company - a text completion framework for Emacs. The name stands for "complete anything"
     http://company-mode.github.io
 #+BEGIN_SRC emacs-lisp
@@ -486,11 +531,6 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
   :defer 2
   :bind ("C-<tab>" . company-complete)
   :config (global-company-mode t))
-#+END_SRC
-*** dired-subtree
-#+BEGIN_SRC emacs-lisp
-(use-package dired-subtree
-  :commands (dired-subtree-insert))
 #+END_SRC
 *** Projectile - easy project management and navigation
     https://github.com/bbatsov/projectile
@@ -528,13 +568,11 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     (setq projectile-use-git-grep t)
     (setq projectile-require-project-root nil)
     (setq projectile-completion-system 'ivy)
-    ;;		  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-    ;;		  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
     :bind
-    (("s-f" . projectile-find-file)  ; Unter Windows ist der Super-Key die Windows-Taste
-      ("s-F" . projectile-grep)
+    (("s-f" . projectile-find-file)
+     ("s-F" . projectile-grep)
+     )
     )
-  )
 
   (use-package counsel-projectile
     :commands (counsel-projectile-mode)
@@ -542,83 +580,26 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     (projectile-mode +1)
     (counsel-projectile-mode))
 #+END_SRC
-** Development
-*** yaml-mode
-#+BEGIN_SRC emacs-lisp
-(use-package yaml-mode :mode "\\.ya?ml$")
-#+END_SRC
-*** conf-mode - UNIX config files
-#+BEGIN_SRC emacs-lisp
-(use-package conf-mode)
-#+END_SRC
-*** elisp-format - EMCACS Lisp files
-#+BEGIN_SRC emacs-lisp
-(use-package elisp-format)
-#+END_SRC
-*** SLIME - superior Lisp Interaction Mode for Emacs.
-    https://github.com/slime/slime
-#+BEGIN_SRC emacs-lisp
-(use-package slime)
-    :init
-    ;; Set your lisp system and, optionally, some contribs
-    (setq inferior-lisp-program "/usr/bin/sbcl")
-    (setq slime-contribs '(slime-fancy))
-#+END_SRC
-*** Ocaml (Tuareg)
-#+BEGIN_SRC emacs-lisp
-  (use-package tuareg
-    :init
-    (add-hook 'tuareg-mode-hook #'(lambda() (setq mode-name "🐫"))))
-#+END_SRC
 *** Markdown
 #+BEGIN_SRC emacs-lisp
   (use-package markdown-mode
     :commands (markdown-mode gfm-mode)
     :mode
     (("README\\.md\\'" . gfm-mode)
-      ("\\.md\\'"       . markdown-mode)
-      ("\\.markdown\\'" . markdown-mode))
-    :init (setq markdown-command "markdown_py")
-    :bind (("<f9>" . markdown-preview)))
+     ("\\.md\\'"       . markdown-mode)
+     ("\\.markdown\\'" . markdown-mode))
+    :init
+    (if (eq system-type 'usg-unix-v)
+        (setq markdown-command "markdown_py")
+      (setq markdown-command "multimarkdown"))
+    :bind
+    (("<f9>" . markdown-preview)))
 #+END_SRC
-*** cmake-mode
+*** conf-mode - UNIX config files
 #+BEGIN_SRC emacs-lisp
-(use-package cmake-mode
-  :mode "CMakeLists\\.txt\\'")
+(use-package conf-mode)
 #+END_SRC
-*** docker
-#+BEGIN_SRC emacs-lisp
-(use-package docker
-  :commands docker-mode
-  :bind ("C-c d" . docker))
-
-(use-package dockerfile-mode
-  :mode "Dockerfile.*\\'")
-#+END_SRC
-*** prolog
-#+BEGIN_SRC emacs-lisp
-  (use-package prolog
-    :load-path "~/code/emacs/prolog"
-    :mode ("\\.pl\\'" . prolog-mode)
-    :config
-    (setq-default prolog-system 'swi)
-    (setq prolog-system 'swi))
-#+END_SRC
-*** magit
-#+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :commands magit-status
-    :config
-    (magit-auto-revert-mode 1)
-    (setq magit-completing-read-function 'ivy-completing-read)
-    :init (add-hook 'magit-mode-hook 'magit-load-config-extensions)
-    :bind ("C-x g" . magit-status))
-
-  (use-package magithub
-    :after magit
-    :disabled
-    :config (magithub-feature-autoinject t))
-#+END_SRC
+* Development
 *** flycheck - syntax checker
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
@@ -661,6 +642,109 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
         :fringe-bitmap 'my-flycheck-fringe-indicator
         :fringe-face 'flycheck-fringe-info)))
 #+END_SRC
+*** magit and forge (formerly magithub)
+    https://magit.vc/
+    https://github.com/magit/forge
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :bind ("C-x g" . magit-status))
+
+  (use-package forge
+    :after magit
+  )
+#+END_SRC
+*** git-gutter and git-timemachine
+    git-gutter: Shows modified lines.  https://github.com/syohex/emacs-git-gutter
+    git-timemachine: Go through git history in a file.  https://github.com/emacsmirror/git-timemachine
+#+BEGIN_SRC emacs-lisp
+(use-package git-gutter
+  :config
+  (global-git-gutter-mode t)
+  (setq git-gutter:modified-sign "|")
+  (set-face-foreground 'git-gutter:modified "grey")
+  (set-face-foreground 'git-gutter:added "green")
+  (set-face-foreground 'git-gutter:deleted "red")
+  :bind (("C-x C-g" . git-gutter))
+  :diminish nil)
+
+(use-package git-timemachine)
+#+END_SRC
+*** cmake-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package cmake-mode
+    :mode "CMakeLists\\.txt\\'")
+#+END_SRC
+*** yaml-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package yaml-mode
+    :mode "\\.ya?ml$")
+#+END_SRC
+*** elisp-format - EMCACS Lisp files
+##+BEGIN_SRC emacs-lisp
+  (use-package elisp-format)
+##+END_SRC
+*** Parinfer
+    https://github.com/shaunlebron/parinfer
+    parinfer-extensions:
+| Extension     | Function                                                                          |
+|---------------+-----------------------------------------------------------------------------------|
+| defaults      | Should be enabled, basic compatibility                                            |
+| pretty-parens | Use dim style for Indent Mode, rainbow delimiters for Paren Mode                  |
+| smart-yank    | Yank will preserve indentation in Indent Mode, will preserve parens in Paren Mode |
+| smart-tab     | C-f & C-b on empty line will goto next/previous import indentation.               |
+| paredit       | Introduce some paredit commands from paredit-mode.                                |
+| lispy         | Integration with Lispy.                                                           |
+| evil          | Integration with Evil.                                                            |
+| one           | Experimental on fuzz Indent Mode and Paren Mode. Not recommanded.                 |
+#+BEGIN_SRC emacs-lisp
+  ;; auto switch to Indent Mode whenever parens are balance in Paren Mode
+  (use-package parinfer
+  :ensure t
+  :bind
+  ("C-," . parinfer-toggle-mode)
+  :init
+  (progn
+    (setq parinfer-extensions
+          '(defaults        ; should be included.
+             pretty-parens  ; different paren styles for different modes.
+             paredit        ; Introduce some paredit commands.
+             smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
+             smart-yank))   ; Yank behavior depend on mode.
+    ;; auto switch to Indent Mode whenever parens are balance in Paren Mode
+    (setq parinfer-auto-switch-indent-mode t)
+    (add-hook 'clojure-mode-hook #'parinfer-mode)
+    (add-hook 'emacs-lisp-mode-hook #'parinfer-mode)
+    (add-hook 'common-lisp-mode-hook #'parinfer-mode)
+    (add-hook 'scheme-mode-hook #'parinfer-mode)
+    (add-hook 'lisp-mode-hook #'parinfer-mode)))
+#+END_SRC
+*** SLIME - superior Lisp Interaction Mode for Emacs
+    https://github.com/slime/slime
+#+BEGIN_SRC emacs-lisp
+  (use-package slime
+    :init
+    ;; Set your lisp system and, optionally, some contribs
+    (setq inferior-lisp-program "/usr/bin/sbcl")
+    (setq slime-contribs '(slime-fancy)))
+#+END_SRC
+*** docker
+#+BEGIN_SRC emacs-lisp
+(use-package docker
+  :commands docker-mode
+  :bind ("C-c d" . docker))
+
+(use-package dockerfile-mode
+  :mode "Dockerfile.*\\'")
+#+END_SRC
+*** prolog
+#+BEGIN_SRC emacs-lisp
+  (use-package prolog
+    :load-path "~/code/emacs/prolog"
+    :mode ("\\.pl\\'" . prolog-mode)
+    :config
+    (setq-default prolog-system 'swi)
+    (setq prolog-system 'swi))
+#+END_SRC
 *** Python packages
 #+BEGIN_SRC emacs-lisp
     (use-package jedi
@@ -695,10 +779,7 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
       :init (yas-global-mode 1))
   (use-package yasnippet-snippets)
 #+END_SRC
-*** Anything else
-#+BEGIN_SRC
-#+END_SRC
-** Web
+* Web
 #+BEGIN_SRC emacs-lisp
   (use-package web-mode
     :mode "\\.phtml\\'"
@@ -738,14 +819,14 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
   (use-package nginx-mode
     :mode "\\.nginx\\'")
 #+END_SRC
-** JavaScript
+* JavaScript
 #+BEGIN_SRC emacs-lisp
 (use-package js2-mode
   :mode ("\\.js\\'")
   :interpreter "node")
 
 (use-package angular-mode
-  :config (setq js-indent-level 2))
+  :config (setq js-indent-level 4))
 
 ;; Run eslint --fix
 (defun eslint-fix-file ()
@@ -763,10 +844,10 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
   (tide-hl-identifier-mode +1)
 
   (setq web-mode-enable-auto-quoting nil)
-  (setq web-mode-markup-indent-offset 2)
-  (setq web-mode-code-indent-offset 2)
-  (setq web-mode-attr-indent-offset 2)
-  (setq web-mode-attr-value-indent-offset 2)
+  (setq web-mode-markup-indent-offset 4)
+  (setq web-mode-code-indent-offset 4)
+  (setq web-mode-attr-indent-offset 4)
+  (setq web-mode-attr-value-indent-offset 4)
   (set (make-local-variable 'company-backends)
         '((company-tide company-files :with company-yasnippet)
           (company-dabbrev-code company-dabbrev)))
@@ -813,9 +894,10 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
   (add-hook 'typescript-mode-hook 'company-mode)
   (add-hook 'typescript-mode-hook 'prettier-js-mode))
 
-(setq-default typescript-indent-level 2)
+(setq-default typescript-indent-level 4)
 #+END_SRC
-** mu4e
+* mu4e
+##+BEGIN_SRC emacs-lisp
 (use-package mu4e
 ;;  :load-path "/usr/share/emacs/site-lisp/mu4e"
     :commands mu4e
@@ -845,7 +927,7 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
                             (smtpmail-stream-type . starttls)
                             (smtpmail-smtp-service . 587)))
                     (make-mu4e-context
-                        :name "webde"
+                        :name "web.de"
                         :enter-func (lambda () (mu4e-message "Switch to web.de context"))
                         :match-func (lambda (msg)
                             (when
@@ -895,7 +977,8 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 
             ;; don't keep message buffers around
             (setq message-kill-buffer-on-exit t))))
-** org - markdown on steroids
+##+END_SRC
+* org - markdown on steroids
 #+BEGIN_SRC emacs-lisp
     (use-package org
       :mode ("\\.org\\'" . org-mode)
@@ -925,18 +1008,28 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 
     (use-package htmlize)
 #+END_SRC
-** PDF Tools
+* PDF Tools
 #+BEGIN_SRC emacs-lisp
-(use-package pdf-tools
-  :magic ("%PDF" . pdf-view-mode)
-  :config
-  (pdf-tools-install)
-  ;; open pdfs scaled to fit page
-  (setq-default pdf-view-display-size 'fit-width)
-  ;; use normal isearch
-  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward))
+  (use-package pdf-tools
+    :magic ("%PDF" . pdf-view-mode)
+    :config
+    (pdf-tools-install)
+    ;; open pdfs scaled to fit page
+    (setq-default pdf-view-display-size 'fit-page)
+    ;; automatically annotate highlights
+    (setq pdf-annot-activate-created-annotations t)
+    ;; turn off cua so copy works
+    (add-hook 'pdf-view-mode-hook (lambda () (cua-mode 0)))
+    ;; more fine-grained zooming
+    (setq pdf-view-resize-factor 1.1)
+    ;; keyboard shortcuts
+    (define-key pdf-view-mode-map (kbd "h") 'pdf-annot-add-highlight-markup-annotation)
+    (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
+    (define-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete)
+    ;; use normal isearch
+    (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward))
 #+END_SRC
-** LaTeX
+* LaTeX
 #+BEGIN_SRC emacs-lisp
 (use-package tex-site
   :ensure auctex
@@ -957,71 +1050,71 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 * OS dependent settings and packages
 #+BEGIN_SRC emacs-lisp
   (cond
-    ((string-equal system-type "gnu/linux")
-      (progn
-        (setq-default tide-tsserver-executable "/home/andreas/npm/bin/tsserver")
-        ;;https://github.com/jaypei/emacs-neotree
-        (use-package neotree
-          :init
-          (setq-default neo-show-hidden-files t)
-          (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-          (global-set-key [f8] 'neotree-toggle))
+   ((string-equal system-type "gnu/linux")
+    (progn
+      (setq-default tide-tsserver-executable "/home/andreas/npm/bin/tsserver")
+      ;;https://github.com/jaypei/emacs-neotree
+      (use-package neotree
+        :init
+        (setq-default neo-show-hidden-files t)
+        (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+        (global-set-key [f8] 'neotree-toggle))
       )
     )
-    ((string-equal system-type "darwin")
-      (progn
-        (setq-default tide-tsserver-executable "/Users/andreas/npm/bin/tsserver")
+   ((string-equal system-type "darwin")
+    (progn
+      (setq-default tide-tsserver-executable "/Users/andreas/npm/bin/tsserver")
 
-        ;; set keys for Apple keyboard, for emacs in OS X
-        (setq mac-command-modifier 'super)   ; make cmd key do Super
-        (setq mac-option-modifier  'meta)    ; make opt key do Meta
-        (setq mac-control-modifier 'control) ; make Control key do Control
+      ;; set keys for Apple keyboard, for emacs in OS X
+      (setq mac-command-modifier 'super)   ; make cmd key do Super
+      (setq mac-option-modifier  'meta)    ; make opt key do Meta
+      (setq mac-control-modifier 'control) ; make Control key do Control
+      ;;(setq ns-function-modifier 'hyper)   ; make Fn key do Hyper
+      ;; I am using a German PC keyboard on my Mac so I have to leave the right option undefined in order to get {[]}\@~|²³
+      (setq mac-right-option-modifier nil)
+      ;; MacOS has bindings for <home> and <end> to *-of-buffer:
+      (global-set-key (kbd "<home>") 'beginning-of-line)
+      (global-set-key (kbd "C-<home>") 'beginning-of-buffer)
+      (global-set-key (kbd "<end>") 'end-of-line)
+      (global-set-key (kbd "C-<end>") 'end-of-buffer)
 
-        ;;(setq ns-function-modifier 'hyper)   ; make Fn key do Hyper
-        ;; I am using a German PC keyboard on my Mac so I have to leave the right option undefined in order to get {[]}\@~|²³
-        (setq mac-right-option-modifier nil)
-        ;; MacOS has bindings for <home> and <end> to *-of-buffer:
-        (global-set-key (kbd "<home>") 'beginning-of-line)
-        (global-set-key (kbd "C-<home>") 'beginning-of-buffer)
-        (global-set-key (kbd "<end>") 'end-of-line)
-        (global-set-key (kbd "C-<end>") 'end-of-buffer)
-
-        ;; https://github.com/Alexander-Miller/treemacs
-        (use-package treemacs
-          :defer t
-          :init
-          (with-eval-after-load 'winum
-            (define-key winum-keymap (kbd "M-´") #'treemacs-select-window))
-          :config
-          (progn
-            (setq treemacs-collapse-dirs (if (executable-find "python") 3 0)
-              treemacs-deferred-git-apply-delay   0.5
-              treemacs-display-in-side-window     t
-              treemacs-file-event-delay           5000
-              treemacs-file-follow-delay          0.2
-              treemacs-follow-after-init          t
-              treemacs-recenter-distance          0.1
-              treemacs-git-command-pipe           ""
-              treemacs-goto-tag-strategy          'refetch-index
-              treemacs-indentation                2
-              treemacs-indentation-string         " "
-              treemacs-is-never-other-window      nil
-              treemacs-max-git-entries            5000
-              treemacs-no-png-images              nil
-              treemacs-no-delete-other-windows    t
-              treemacs-project-follow-cleanup     nil
-              treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-              treemacs-recenter-after-file-follow nil
-              treemacs-recenter-after-tag-follow  nil
-              treemacs-show-cursor                nil
-              treemacs-show-hidden-files          t
-              treemacs-silent-filewatch           nil
-              treemacs-silent-refresh             nil
-              treemacs-sorting                    'alphabetic-desc
-              treemacs-space-between-root-nodes   t
-              treemacs-tag-follow-cleanup         t
-              treemacs-tag-follow-delay           1.5
-              treemacs-width                      35)
+      ;; https://github.com/Alexander-Miller/treemacs
+      (use-package treemacs
+        :defer t
+        :init
+        (with-eval-after-load 'winum
+          (define-key winum-keymap (kbd "M-´") #'treemacs-select-window))
+        :config
+        (progn
+          (setq
+           treemacs-collapse-dirs (if (executable-find "python") 3 0)
+           treemacs-deferred-git-apply-delay   0.5
+           treemacs-display-in-side-window     t
+           treemacs-file-event-delay           5000
+           treemacs-file-follow-delay          0.2
+           treemacs-follow-after-init          t
+           treemacs-recenter-distance          0.1
+           treemacs-git-command-pipe           ""
+           treemacs-goto-tag-strategy          'refetch-index
+           treemacs-indentation                2
+           treemacs-indentation-string         " "
+           treemacs-is-never-other-window      nil
+           treemacs-max-git-entries            5000
+           treemacs-no-png-images              nil
+           treemacs-no-delete-other-windows    t
+           treemacs-project-follow-cleanup     nil
+           treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+           treemacs-recenter-after-file-follow nil
+           treemacs-recenter-after-tag-follow  nil
+           treemacs-show-cursor                nil
+           treemacs-show-hidden-files          t
+           treemacs-silent-filewatch           nil
+           treemacs-silent-refresh             nil
+           treemacs-sorting                    'alphabetic-desc
+           treemacs-space-between-root-nodes   t
+           treemacs-tag-follow-cleanup         t
+           treemacs-tag-follow-delay           1.5
+           treemacs-width                      35)
 
           ;; The default width and height of the icons is 22 pixels. If you are
           ;; using a Hi-DPI display, uncomment this to double the icon size.
@@ -1040,7 +1133,6 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
         (:map global-map
               ("M-0"       . treemacs-select-window)
               ("C-x t 1"   . treemacs-delete-other-windows)
-              ;; ("C-x t t"   . treemacs)
               ("<f8>"      . treemacs)
               ("C-x t B"   . treemacs-bookmark)
               ("C-x t C-t" . treemacs-find-file)
@@ -1057,67 +1149,67 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
         :after treemacs magit)
       )
     )
-    ((string-equal system-type "usg-unix-v") ; UNIX System V
-      (progn
-        (setq-default tide-tsserver-executable "/export/home/andreas/npm/bin/tsserver")
-        ;; We have a problem with graphics in OpenIndiana, thus we use the simpler neotree for it.
-        ;; treemacs is also not working for Debian Stretch (emacs-25.1.1).
-        ;;https://github.com/jaypei/emacs-neotree
-        (use-package neotree
-          :init
-          (setq-default neo-show-hidden-files t)
-          (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-          (global-set-key [f8] 'neotree-toggle)
+   ((string-equal system-type "usg-unix-v") ; UNIX System V
+    (progn
+      (setq-default tide-tsserver-executable "/export/home/andreas/npm/bin/tsserver")
+      ;; We have a problem with graphics in OpenIndiana, thus we use the simpler neotree for it.
+      ;; treemacs is also not working for Debian Stretch (emacs-25.1.1).
+      ;;https://github.com/jaypei/emacs-neotree
+      (use-package neotree
+        :init
+        (setq-default neo-show-hidden-files t)
+        (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+        (global-set-key [f8] 'neotree-toggle)
         )
       )
     )
-    ((string-equal system-type "windows-nt") ; Microsoft Windows
-      (progn
-        (setq-default tide-tsserver-executable "c:/Users/andreas/AppData/Roaming/npm/bin/tsserver")
-        ;; make PC keyboard's Win key or other to type Super or Hyper, for emacs running on Windows.
-        (setq w32-pass-lwindow-to-system nil)
-        (setq w32-lwindow-modifier 'super)    ; Left Windows key
-        (setq w32-pass-rwindow-to-system nil)
-        (setq w32-rwindow-modifier 'super)    ; Right Windows key
-        (setq w32-pass-apps-to-system nil)
-        (setq w32-apps-modifier 'hyper)       ; Menu/App key
+   ((string-equal system-type "windows-nt") ; Microsoft Windows
+    (progn
+      (setq-default tide-tsserver-executable "c:/Users/andreas/AppData/Roaming/npm/bin/tsserver")
+      ;; make PC keyboard's Win key or other to type Super or Hyper, for emacs running on Windows.
+      (setq w32-pass-lwindow-to-system nil)
+      (setq w32-lwindow-modifier 'super)    ; Left Windows key
+      (setq w32-pass-rwindow-to-system nil)
+      (setq w32-rwindow-modifier 'super)    ; Right Windows key
+      (setq w32-pass-apps-to-system nil)
+      (setq w32-apps-modifier 'hyper)       ; Menu/App key
 
-        ;; https://github.com/Alexander-Miller/treemacs
-        (use-package treemacs
-          :defer t
-          :init
-          (with-eval-after-load 'winum
-            (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-          :config
-          (progn
-            (setq treemacs-collapse-dirs              (if (executable-find "python") 3 0)
-              treemacs-deferred-git-apply-delay   0.5
-              treemacs-display-in-side-window     t
-              treemacs-file-event-delay           5000
-              treemacs-file-follow-delay          0.2
-              treemacs-follow-after-init          t
-              treemacs-recenter-distance          0.1
-              treemacs-git-command-pipe           ""
-              treemacs-goto-tag-strategy          'refetch-index
-              treemacs-indentation                2
-              treemacs-indentation-string         " "
-              treemacs-is-never-other-window      nil
-              treemacs-max-git-entries            5000
-              treemacs-no-png-images              nil
-              treemacs-no-delete-other-windows    t
-              treemacs-project-follow-cleanup     nil
-              treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-              treemacs-recenter-after-file-follow nil
-              treemacs-recenter-after-tag-follow  nil
-              treemacs-show-cursor                nil
-              treemacs-show-hidden-files          t
-              treemacs-silent-filewatch           nil
-              treemacs-silent-refresh             nil
-              treemacs-sorting                    'alphabetic-desc
-              treemacs-space-between-root-nodes   t
-              treemacs-tag-follow-cleanup         t
-              treemacs-tag-follow-delay           1.5
-              treemacs-width                      35)
+      ;; https://github.com/Alexander-Miller/treemacs
+      (use-package treemacs
+        :defer t
+        :init
+        (with-eval-after-load 'winum
+          (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+        :config
+        (progn
+          (setq treemacs-collapse-dirs              (if (executable-find "python") 3 0)
+                treemacs-deferred-git-apply-delay   0.5
+                treemacs-display-in-side-window     t
+                treemacs-file-event-delay           5000
+                treemacs-file-follow-delay          0.2
+                treemacs-follow-after-init          t
+                treemacs-recenter-distance          0.1
+                treemacs-git-command-pipe           ""
+                treemacs-goto-tag-strategy          'refetch-index
+                treemacs-indentation                2
+                treemacs-indentation-string         " "
+                treemacs-is-never-other-window      nil
+                treemacs-max-git-entries            5000
+                treemacs-no-png-images              nil
+                treemacs-no-delete-other-windows    t
+                treemacs-project-follow-cleanup     nil
+                treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+                treemacs-recenter-after-file-follow nil
+                treemacs-recenter-after-tag-follow  nil
+                treemacs-show-cursor                nil
+                treemacs-show-hidden-files          t
+                treemacs-silent-filewatch           nil
+                treemacs-silent-refresh             nil
+                treemacs-sorting                    'alphabetic-desc
+                treemacs-space-between-root-nodes   t
+                treemacs-tag-follow-cleanup         t
+                treemacs-tag-follow-delay           1.5
+                treemacs-width                      35)
 
           ;; The default width and height of the icons is 22 pixels. If you are
           ;; using a Hi-DPI display, uncomment this to double the icon size.
@@ -1136,7 +1228,6 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
         (:map global-map
               ("M-0"       . treemacs-select-window)
               ("C-x t 1"   . treemacs-delete-other-windows)
-              ;; ("C-x t t"   . treemacs)
               ("<f8>"      . treemacs)
               ("C-x t B"   . treemacs-bookmark)
               ("C-x t C-t" . treemacs-find-file)
@@ -1153,7 +1244,7 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
         :after treemacs magit)
       )
     )
-  )
+   )
 #+END_SRC
 
 * Holidays
