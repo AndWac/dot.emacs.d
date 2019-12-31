@@ -188,12 +188,34 @@
 #+END_SRC
 *** Icons
 #+BEGIN_SRC emacs-lisp
-  (use-package all-the-icons)
+  (use-package all-the-icons-ivy
+  :hook (after-init . all-the-icons-ivy-setup))
 
   ;; https://github.com/ryuslash/mode-icons
   (use-package mode-icons
     :config
     (mode-icons-mode))
+#+END_SRC
+*** Tabs
+#+BEGIN_SRC emacs-lisp
+  (use-package centaur-tabs
+    :demand
+    :init (setq centaur-tabs-set-bar 'over)
+    :config
+    (centaur-tabs-mode +1)
+    (centaur-tabs-headline-match)
+    (setq centaur-tabs-set-modified-marker t
+          centaur-tabs-modified-marker " ● "
+          centaur-tabs-cycle-scope 'tabs
+          centaur-tabs-height 30
+          centaur-tabs-set-icons t
+          centaur-tabs-close-button " × ")
+    (when (member "Arial" (font-family-list))
+        (centaur-tabs-change-fonts "Arial" 130))
+    (centaur-tabs-group-by-projectile-project)
+    :bind
+    ("C-S-<tab>" . centaur-tabs-backward)
+    ("C-<tab>" . centaur-tabs-forward))
 #+END_SRC
 *** telephone-line
     Better mode line
@@ -600,6 +622,39 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 (use-package conf-mode)
 #+END_SRC
 * Development
+*** General Packages
+#+BEGIN_SRC emacs-lisp
+  ;; highlight-indent-guides highlights indentation levels via font-lock.
+  ;; https://github.com/DarthFennec/highlight-indent-guides
+  (use-package highlight-indent-guides
+    :hook (prog-mode . highlight-indent-guides-mode)
+    :diminish
+    :config
+    (setq highlight-indent-guides-method 'character)
+    (setq highlight-indent-guides-character 9615) ; left-align vertical bar
+    (setq highlight-indent-guides-auto-character-face-perc 20))
+
+  ;; highlight-symbol: automatic and manual symbol highlighting for Emacs.
+  ;; https://github.com/nschum/highlight-symbol.el
+  (use-package highlight-symbol
+    :diminish
+    :hook (prog-mode . highlight-symbol-mode)
+    :config (setq highlight-symbol-idle-delay 0.3))
+
+  ;; highlight-numbers is an Emacs minor mode that highlights numeric literals in source code.
+  ;; https://github.com/Fanael/highlight-numbers
+  (use-package highlight-numbers
+    :hook (prog-mode . highlight-numbers-mode))
+
+  ;;
+  (use-package highlight-operators
+    :hook (prog-mode . highlight-operators-mode))
+
+  ;; Highlight escape sequences in Emacs
+  ;; https://github.com/dgutov/highlight-escape-sequences
+  (use-package highlight-escape-sequences
+    :hook (prog-mode . hes-mode))
+#+END_SRC
 *** flycheck - syntax checker
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
@@ -642,7 +697,7 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
         :fringe-bitmap 'my-flycheck-fringe-indicator
         :fringe-face 'flycheck-fringe-info)))
 #+END_SRC
-*** magit and forge (formerly magithub)
+*** magit, forge (formerly magithub) and diff-hl
     https://magit.vc/
     https://github.com/magit/forge
 #+BEGIN_SRC emacs-lisp
@@ -651,7 +706,18 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 
   (use-package forge
     :after magit
-  )
+    )
+
+  ;; Emacs package for highlighting uncommitted changes
+  (use-package diff-hl
+    :custom-face
+    (diff-hl-insert ((t (:foreground "#55bb55" :background nil))))
+    (diff-hl-delete ((t (:foreground "#ff6666" :background nil))))
+    (diff-hl-change ((t (:foreground "#99bbdd" :background nil))))
+    :config
+    (global-diff-hl-mode +1)
+    (diff-hl-flydiff-mode +1)
+    (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh t))
 #+END_SRC
 *** git-gutter and git-timemachine
     git-gutter: Shows modified lines.  https://github.com/syohex/emacs-git-gutter
@@ -679,7 +745,7 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
   (use-package yaml-mode
     :mode "\\.ya?ml$")
 #+END_SRC
-*** elisp-format - EMCACS Lisp files
+*** elisp-format - EMACS Lisp files
 ##+BEGIN_SRC emacs-lisp
   (use-package elisp-format)
 ##+END_SRC
@@ -696,7 +762,7 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 | lispy         | Integration with Lispy.                                                           |
 | evil          | Integration with Evil.                                                            |
 | one           | Experimental on fuzz Indent Mode and Paren Mode. Not recommanded.                 |
-#+BEGIN_SRC emacs-lisp
+##+BEGIN_SRC emacs-lisp
   ;; auto switch to Indent Mode whenever parens are balance in Paren Mode
   (use-package parinfer
   :ensure t
@@ -717,7 +783,7 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     (add-hook 'common-lisp-mode-hook #'parinfer-mode)
     (add-hook 'scheme-mode-hook #'parinfer-mode)
     (add-hook 'lisp-mode-hook #'parinfer-mode)))
-#+END_SRC
+##+END_SRC
 *** SLIME - superior Lisp Interaction Mode for Emacs
     https://github.com/slime/slime
 #+BEGIN_SRC emacs-lisp
