@@ -623,9 +623,18 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 #+END_SRC
 * Development
 *** General Packages
+    highlight-indent-guides highlights indentation levels via font-lock.
+    https://github.com/DarthFennec/highlight-indent-guides
+
+    highlight-symbol: automatic and manual symbol highlighting for Emacs.
+    https://github.com/nschum/highlight-symbol.el
+
+    highlight-numbers is an Emacs minor mode that highlights numeric literals in source code.
+    https://github.com/Fanael/highlight-numbers
+
+    Highlight escape sequences in Emacs
+    https://github.com/dgutov/highlight-escape-sequences
 #+BEGIN_SRC emacs-lisp
-  ;; highlight-indent-guides highlights indentation levels via font-lock.
-  ;; https://github.com/DarthFennec/highlight-indent-guides
   (use-package highlight-indent-guides
     :hook (prog-mode . highlight-indent-guides-mode)
     :diminish
@@ -634,24 +643,17 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     (setq highlight-indent-guides-character 9615) ; left-align vertical bar
     (setq highlight-indent-guides-auto-character-face-perc 20))
 
-  ;; highlight-symbol: automatic and manual symbol highlighting for Emacs.
-  ;; https://github.com/nschum/highlight-symbol.el
   (use-package highlight-symbol
     :diminish
     :hook (prog-mode . highlight-symbol-mode)
     :config (setq highlight-symbol-idle-delay 0.3))
 
-  ;; highlight-numbers is an Emacs minor mode that highlights numeric literals in source code.
-  ;; https://github.com/Fanael/highlight-numbers
   (use-package highlight-numbers
     :hook (prog-mode . highlight-numbers-mode))
 
-  ;;
   (use-package highlight-operators
     :hook (prog-mode . highlight-operators-mode))
 
-  ;; Highlight escape sequences in Emacs
-  ;; https://github.com/dgutov/highlight-escape-sequences
   (use-package highlight-escape-sequences
     :hook (prog-mode . hes-mode))
 #+END_SRC
@@ -705,8 +707,7 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     :bind ("C-x g" . magit-status))
 
   (use-package forge
-    :after magit
-    )
+    :after magit)
 
   ;; Emacs package for highlighting uncommitted changes
   (use-package diff-hl
@@ -762,28 +763,26 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 | lispy         | Integration with Lispy.                                                           |
 | evil          | Integration with Evil.                                                            |
 | one           | Experimental on fuzz Indent Mode and Paren Mode. Not recommanded.                 |
-##+BEGIN_SRC emacs-lisp
-  ;; auto switch to Indent Mode whenever parens are balance in Paren Mode
+
+auto switch to Indent Mode whenever parens are balance in Paren Mode
+#+BEGIN_SRC emacs-lisp
   (use-package parinfer
-  :ensure t
-  :bind
-  ("C-," . parinfer-toggle-mode)
-  :init
-  (progn
-    (setq parinfer-extensions
-          '(defaults        ; should be included.
-             pretty-parens  ; different paren styles for different modes.
-             paredit        ; Introduce some paredit commands.
-             smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
-             smart-yank))   ; Yank behavior depend on mode.
-    ;; auto switch to Indent Mode whenever parens are balance in Paren Mode
-    (setq parinfer-auto-switch-indent-mode t)
-    (add-hook 'clojure-mode-hook #'parinfer-mode)
-    (add-hook 'emacs-lisp-mode-hook #'parinfer-mode)
-    (add-hook 'common-lisp-mode-hook #'parinfer-mode)
-    (add-hook 'scheme-mode-hook #'parinfer-mode)
-    (add-hook 'lisp-mode-hook #'parinfer-mode)))
-##+END_SRC
+    :ensure
+    :bind
+    ("C-," . parinfer-toggle-mode)
+    :init
+    (progn
+      (setq parinfer-extensions
+            '(defaults       ; should be included.
+               paredit        ; Introduce some paredit commands.
+               smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
+               smart-yank))   ; Yank behavior depend on mode.
+      (add-hook 'clojure-mode-hook #'parinfer-mode)
+      (add-hook 'emacs-lisp-mode-hook #'parinfer-mode)
+      (add-hook 'common-lisp-mode-hook #'parinfer-mode)
+      (add-hook 'scheme-mode-hook #'parinfer-mode)
+      (add-hook 'lisp-mode-hook #'parinfer-mode)))
+#+END_SRC
 *** SLIME - superior Lisp Interaction Mode for Emacs
     https://github.com/slime/slime
 #+BEGIN_SRC emacs-lisp
