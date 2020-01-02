@@ -830,6 +830,18 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
       (add-hook 'common-lisp-mode-hook #'parinfer-mode)
       (add-hook 'scheme-mode-hook #'parinfer-mode)
       (add-hook 'lisp-mode-hook #'parinfer-mode)))
+
+  (use-package paredit
+    :bind ("M-^" . paredit-delete-indentation)
+    :bind ("C-^" . paredit-remove-newlines)
+    :init
+    (add-hook 'clojure-mode-hook 'paredit-mode)
+    (add-hook 'emacs-lisp-mode-hook       'paredit-mode)
+    (add-hook 'eval-expression-minibuffer-setup-hook 'paredit-mode)
+    (add-hook 'ielm-mode-hook             'paredit-mode)
+    (add-hook 'lisp-mode-hook             'paredit-mode)
+    (add-hook 'lisp-interaction-mode-hook 'paredit-mode)
+    (add-hook 'scheme-mode-hook           'paredit-mode))
 #+END_SRC
 *** SLIME - superior Lisp Interaction Mode for Emacs
     https://github.com/slime/slime
@@ -859,37 +871,37 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
     (setq prolog-system 'swi))
 #+END_SRC
 *** Python packages
+    elpy - Emacs Python Development Environment (https://github.com/jorgenschaefer/elpy)
+    jedi - Python auto-completion for Emacs (https://github.com/tkf/emacs-jedi)
 #+BEGIN_SRC emacs-lisp
-    (use-package jedi
-      :init
-      (add-hook 'python-mode-hook 'jedi:setup)
-      (add-hook 'python-mode-hook 'jedi:ac-setup))
+  (use-package jedi
+    :init
+    (add-hook 'python-mode-hook 'jedi:setup)
+    (add-hook 'python-mode-hook 'jedi:ac-setup))
 
-    ;; Python IDE
-    (use-package elpy
-      :defer 2
-      :config
-      ;; Use Flycheck instead of Flymake
-      (when (require 'flycheck nil t)
-        (remove-hook 'elpy-modules 'elpy-module-flymake)
-        (remove-hook 'elpy-modules 'elpy-module-yasnippet)
-        (remove-hook 'elpy-mode-hook 'elpy-module-highlight-indentation)
-        (add-hook 'elpy-mode-hook 'flycheck-mode))
-      (elpy-enable)
-      ;; jedi is great
-      (setq elpy-rpc-backend "jedi")
-      (unless (string-equal system-type "usg-unix-v") ; UNIX System V (OpenIndiana) doesn't have Jupyter
-        (progn
-          (setq python-shell-interpreter "jupyter"
-                python-shell-interpreter-args "console --simple-prompt"
-                python-shell-prompt-detect-failure-warning nil)
-          (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter"))))
+  (use-package elpy
+    :defer 2
+    :config
+    ;; Use Flycheck instead of Flymake
+    (when (require 'flycheck nil t)
+      (remove-hook 'elpy-modules 'elpy-module-flymake)
+      (remove-hook 'elpy-modules 'elpy-module-yasnippet)
+      (remove-hook 'elpy-mode-hook 'elpy-module-highlight-indentation)
+      (add-hook 'elpy-mode-hook 'flycheck-mode))
+    (elpy-enable)
+    (setq elpy-rpc-backend "jedi")
+    (unless (string-equal system-type "usg-unix-v") ; UNIX System V (OpenIndiana) doesn't have Jupyter
+      (progn
+        (setq python-shell-interpreter "jupyter"
+              python-shell-interpreter-args "console --simple-prompt"
+              python-shell-prompt-detect-failure-warning nil)
+        (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter"))))
 
   (use-package py-autopep8
-      :init (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
+    :init (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
 
   (use-package yasnippet
-      :init (yas-global-mode 1))
+    :init (yas-global-mode 1))
   (use-package yasnippet-snippets)
 #+END_SRC
 *** LSP
