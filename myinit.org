@@ -1195,17 +1195,17 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
 #+END_SRC
 * LaTeX
 #+BEGIN_SRC emacs-lisp
-(use-package tex-site
-  :ensure auctex
-  :mode ("\\.tex\\'" . latex-mode)
-  :config
-  (setq-default TeX-master nil)
-  (add-hook 'LaTeX-mode-hook
- 	  (lambda ()
- 	    (rainbow-delimiters-mode)
- 	    (company-mode)
- 	    (smartparens-mode)
- 	    (turn-on-reftex)))
+  (use-package tex-site
+    :ensure auctex
+    :mode ("\\.tex\\'" . latex-mode)
+    :config
+    (setq-default TeX-master nil)
+    (add-hook 'LaTeX-mode-hook
+              (lambda ()
+                (rainbow-delimiters-mode)
+                (company-mode)
+                (smartparens-mode)
+                (turn-on-reftex)))
     ;; Update PDF buffers after successful LaTeX runs
     (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook #'TeX-revert-document-buffer)
     ;; to use pdfview with auctex
