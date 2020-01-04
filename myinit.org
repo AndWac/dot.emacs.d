@@ -276,15 +276,15 @@
     I don't use this because I prefer swiper:
 *** rainbow-delimiters - parenthesis change color depending on depth
 #+BEGIN_SRC emacs-lisp
-(use-package rainbow-delimiters
-  :defer t
-  :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+  (use-package rainbow-delimiters
+    :defer t
+    :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 #+END_SRC
 *** rainbox-blocks - understand Clojure/Lisp code at a glance using block highlighting.
 #+BEGIN_SRC emacs-lisp
-(use-package rainbow-blocks
-  :defer t
-  :init (add-hook 'clojure-mode-hook 'rainbow-blocks-mode))
+  (use-package rainbow-blocks
+    :defer t
+    :init (add-hook 'clojure-mode-hook 'rainbow-blocks-mode))
 #+END_SRC
 
 *** highlight-symbol
@@ -351,6 +351,40 @@
     ("C-x j" . smartparens-mode))
 #+END_SRC
 
+*** OpenWith
+##+BEGIN_SRC emacs-lisp
+  (when (require 'openwith nil 'noerror)
+    (setq openwith-associations
+          (list
+           (list (openwith-make-extension-regexp
+                  '("mpg" "mpeg" "mp3" "mp4"
+                    "avi" "wmv" "wav" "mov" "flv"
+                    "ogm" "ogg" "mkv"))
+                 "vlc"
+                 '(file))
+           (list (openwith-make-extension-regexp
+                  '("xbm" "pbm" "pgm" "ppm" "pnm"
+                    "png" "gif" "bmp" "tif" "jpeg" "jpg"))
+                 "xee"
+                 '(file))
+           (list (openwith-make-extension-regexp
+                  '("doc" "xls" "ppt" "odt" "ods" "odg" "odp"))
+                 "libreoffice"
+                 '(file))
+           (list (openwith-make-extension-regexp
+                  '("html"))
+                 "firefox"
+                 '(file))
+
+           '("\\.lyx" "lyx" (file))
+           '("\\.chm" "kchmviewer" (file))
+           (list (openwith-make-extension-regexp
+                  '("pdf" "ps" "ps.gz" "dvi"))
+                 "emacs"
+                 '(file))))
+
+    (openwith-mode 1))
+##+END_SRC
 * Theming
 *** material-theme
 #+BEGIN_SRC emacs-lisp
@@ -783,17 +817,17 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     git-gutter: Shows modified lines.  https://github.com/syohex/emacs-git-gutter
     git-timemachine: Go through git history in a file.  https://github.com/emacsmirror/git-timemachine
 #+BEGIN_SRC emacs-lisp
-(use-package git-gutter
-  :config
-  (global-git-gutter-mode t)
-  (setq git-gutter:modified-sign "|")
-  (set-face-foreground 'git-gutter:modified "grey")
-  (set-face-foreground 'git-gutter:added "green")
-  (set-face-foreground 'git-gutter:deleted "red")
-  :bind (("C-x C-g" . git-gutter))
-  :diminish nil)
+  (use-package git-gutter
+    :config
+    (global-git-gutter-mode t)
+    (setq git-gutter:modified-sign "|")
+    (set-face-foreground 'git-gutter:modified "grey")
+    (set-face-foreground 'git-gutter:added "green")
+    (set-face-foreground 'git-gutter:deleted "red")
+    :bind (("C-x C-g" . git-gutter))
+    :diminish nil)
 
-(use-package git-timemachine)
+  (use-package git-timemachine)
 #+END_SRC
 *** cmake-mode
 #+BEGIN_SRC emacs-lisp
@@ -865,21 +899,21 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
 #+END_SRC
 *** docker
 #+BEGIN_SRC emacs-lisp
-(use-package docker
-  :commands docker-mode
-  :bind ("C-c d" . docker))
+  (use-package docker
+    :commands docker-mode
+    :bind ("C-c d" . docker))
 
-(use-package dockerfile-mode
-  :mode "Dockerfile.*\\'")
+  (use-package dockerfile-mode
+    :mode "Dockerfile.*\\'")
 #+END_SRC
-*** prolog
+*** Prolog
 #+BEGIN_SRC emacs-lisp
   (use-package prolog
-    :load-path "~/code/emacs/prolog"
-    :mode ("\\.pl\\'" . prolog-mode)
-    :config
-    (setq-default prolog-system 'swi)
-    (setq prolog-system 'swi))
+      :load-path "~/code/emacs/prolog"
+      :mode ("\\.pl\\'" . prolog-mode)
+      :config
+      (setq-default prolog-system 'swi)
+      (setq prolog-system 'swi))
 #+END_SRC
 *** Python packages
     elpy - Emacs Python Development Environment (https://github.com/jorgenschaefer/elpy)
@@ -1153,7 +1187,7 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
     (setq org-support-shift-select t))
 
   (eval-after-load "org"
-    '(require 'ox-md nil t))  ;; Provide markdown export:
+    '(require 'ox-md nil t))  ;; Provide markdown export
 
   (use-package org-bullets
     :commands (org-bullets-mode)
@@ -1163,7 +1197,7 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
 
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((plantuml . t) ; this line activates dot
+   '((plantuml . t)
      (typescript . t)))
 
   (setq org-plantuml-jar-path (expand-file-name "~/bin/plantuml.jar"))
@@ -1212,174 +1246,230 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
     (add-hook 'LaTeX-mode-hook 'pdf-tools-install))
 #+END_SRC
 * OS dependent settings and packages
+  https://github.com/Alexander-Miller/treemacs
+  https://github.com/emacs-lsp/lsp-treemacs
+  https://github.com/jaypei/emacs-neotree
 #+BEGIN_SRC emacs-lisp
-  (defun load-treemacs ()
-    ;; https://github.com/Alexander-Miller/treemacs
-    (use-package treemacs
-      :defer t
-      :init
-      (with-eval-after-load 'winum
-        (define-key winum-keymap (kbd "M-´") #'treemacs-select-window))
-      :config
+    (defun xah-open-in-external-app (&optional @fname)
+      "Open the current file or dired marked files in external app.
+    The app is chosen from your OS's preference.
+
+    When called in emacs lisp, if @fname is given, open that.
+
+    URL `http://ergoemacs.org/emacs/emacs_dired_open_file_in_ext_apps.html'
+    Version 2019-11-04"
+      (interactive)
+      (let* (
+             ($file-list
+              (if @fname
+                  (progn (list @fname))
+                (if (string-equal major-mode "dired-mode")
+                    (dired-get-marked-files)
+                  (list (buffer-file-name)))))
+             ($do-it-p (if (<= (length $file-list) 5)
+                           t
+                         (y-or-n-p "Open more than 5 files? "))))
+        (when $do-it-p
+          (cond
+           ((string-equal system-type "windows-nt")
+            (mapc
+             (lambda ($fpath)
+               (w32-shell-execute "open" $fpath)) $file-list))
+           ((string-equal system-type "darwin")
+            (mapc
+             (lambda ($fpath)
+               (shell-command
+                (concat "open " (shell-quote-argument $fpath))))  $file-list))
+           ((string-equal system-type "usg-unix-v")
+            (mapc
+             (lambda ($fpath) (let ((process-connection-type nil))
+                                (start-process "" nil "xdg-open" $fpath))) $file-list))
+           ((string-equal system-type "gnu/linux")
+            (mapc
+             (lambda ($fpath) (let ((process-connection-type nil))
+                                (start-process "" nil "xdg-open" $fpath))) $file-list))))))
+
+
+    (defun load-treemacs ()
+      (use-package treemacs
+        :defer t
+        :init
+        (with-eval-after-load 'winum
+          (define-key winum-keymap (kbd "M-´") #'treemacs-select-window))
+        :config
+        (progn
+          (setq
+           treemacs-collapse-dirs (if (executable-find "python") 3 0)
+           treemacs-deferred-git-apply-delay   0.5
+           treemacs-display-in-side-window     t
+           treemacs-file-event-delay           5000
+           treemacs-file-follow-delay          0.2
+           treemacs-follow-after-init          t
+           treemacs-recenter-distance          0.1
+           treemacs-git-command-pipe           ""
+           treemacs-goto-tag-strategy          'refetch-index
+           treemacs-indentation                2
+           treemacs-indentation-string         " "
+           treemacs-is-never-other-window      nil
+           treemacs-max-git-entries            5000
+           treemacs-no-png-images              nil
+           treemacs-no-delete-other-windows    t
+           treemacs-project-follow-cleanup     nil
+           treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+           treemacs-recenter-after-file-follow nil
+           treemacs-recenter-after-tag-follow  nil
+           treemacs-show-cursor                nil
+           treemacs-show-hidden-files          t
+           treemacs-silent-filewatch           nil
+           treemacs-silent-refresh             nil
+           treemacs-sorting                    'alphabetic-desc
+           treemacs-space-between-root-nodes   t
+           treemacs-tag-follow-cleanup         t
+           treemacs-tag-follow-delay           1.5
+           treemacs-width                      35)
+
+          (treemacs-follow-mode t)
+          (treemacs-filewatch-mode t)
+          (treemacs-fringe-indicator-mode t)
+          (pcase (cons (not (null (executable-find "git")))
+                       (not (null (executable-find "python3"))))
+            (`(t . t)
+             (treemacs-git-mode 'deferred))
+            (`(t . _)
+             (treemacs-git-mode 'simple))))
+        :bind
+        (:map global-map
+              ("M-0"       . treemacs-select-window)
+              ("C-x t 1"   . treemacs-delete-other-windows)
+              ("<f8>"      . treemacs)
+              ("C-x t B"   . treemacs-bookmark)
+              ("C-x t C-t" . treemacs-find-file)
+              ("C-x t M-t" . treemacs-find-tag)))
+
+      (use-package treemacs-projectile
+        :after treemacs projectile)
+
+      (use-package treemacs-icons-dired
+        :after treemacs dired
+        :config (treemacs-icons-dired-mode))
+
+      (use-package treemacs-magit
+        :after treemacs magit)
+
+        (use-package lsp-treemacs
+        :after treemacs
+        :config
+        (lsp-metals-treeview-enable t)
+        (setq lsp-metals-treeview-show-when-views-received t)))
+
+    (defun load-neotree ()
+      (use-package neotree
+        :config
+        (setq neo-window-width 32
+              neo-create-file-auto-open t
+              neo-banner-message nil
+              neo-show-updir-line t
+              neo-window-fixed-size nil
+              neo-vc-integration nil
+              neo-mode-line-type 'neotree
+              neo-smart-open t
+              neo-show-hidden-files t
+              neo-mode-line-type 'none
+              neo-auto-indent-point t)
+  ;;    (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
+        (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+        (setq neo-hidden-regexp-list '("venv" "\\.pyc$" "~$" "\\.git" "__pycache__" ".DS_Store"))
+        (global-set-key [f8] 'neotree-toggle)))
+
+
+    (cond
+     ((string-equal system-type "usg-unix-v") ; UNIX System V
       (progn
-        (setq
-         treemacs-collapse-dirs (if (executable-find "python") 3 0)
-         treemacs-deferred-git-apply-delay   0.5
-         treemacs-display-in-side-window     t
-         treemacs-file-event-delay           5000
-         treemacs-file-follow-delay          0.2
-         treemacs-follow-after-init          t
-         treemacs-recenter-distance          0.1
-         treemacs-git-command-pipe           ""
-         treemacs-goto-tag-strategy          'refetch-index
-         treemacs-indentation                2
-         treemacs-indentation-string         " "
-         treemacs-is-never-other-window      nil
-         treemacs-max-git-entries            5000
-         treemacs-no-png-images              nil
-         treemacs-no-delete-other-windows    t
-         treemacs-project-follow-cleanup     nil
-         treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-         treemacs-recenter-after-file-follow nil
-         treemacs-recenter-after-tag-follow  nil
-         treemacs-show-cursor                nil
-         treemacs-show-hidden-files          t
-         treemacs-silent-filewatch           nil
-         treemacs-silent-refresh             nil
-         treemacs-sorting                    'alphabetic-desc
-         treemacs-space-between-root-nodes   t
-         treemacs-tag-follow-cleanup         t
-         treemacs-tag-follow-delay           1.5
-         treemacs-width                      35)
+        (setq-default tide-tsserver-executable "/export/home/andreas/npm/bin/tsserver")
+        ;; We have a problem with graphics in OpenIndiana, thus we use the simpler neotree for it.
+        ;; treemacs is also not working for Debian Stretch (emacs-25.1.1).
+        (load-neotree)))
 
-        (treemacs-follow-mode t)
-        (treemacs-filewatch-mode t)
-        (treemacs-fringe-indicator-mode t)
-        (pcase (cons (not (null (executable-find "git")))
-                     (not (null (executable-find "python3"))))
-          (`(t . t)
-           (treemacs-git-mode 'deferred))
-          (`(t . _)
-           (treemacs-git-mode 'simple))))
-      :bind
-      (:map global-map
-            ("M-0"       . treemacs-select-window)
-            ("C-x t 1"   . treemacs-delete-other-windows)
-            ("<f8>"      . treemacs)
-            ("C-x t B"   . treemacs-bookmark)
-            ("C-x t C-t" . treemacs-find-file)
-            ("C-x t M-t" . treemacs-find-tag)))
+     ((string-equal system-type "gnu/linux")
+      (progn
+        (setq-default tide-tsserver-executable "/home/andreas/npm/bin/tsserver")
+        (load-neotree)))
 
-    (use-package treemacs-projectile
-      :after treemacs projectile)
+     ((string-equal system-type "darwin")
+      (progn
+        (setq-default tide-tsserver-executable "/Users/andreas/npm/bin/tsserver")
 
-    (use-package treemacs-icons-dired
-      :after treemacs dired
-      :config (treemacs-icons-dired-mode))
+        ;; set keys for Apple keyboard, for emacs in OS X
+        (setq mac-command-modifier 'super)   ; make cmd key do Super
+        (setq mac-option-modifier  'meta)    ; make opt key do Meta
+        (setq mac-control-modifier 'control) ; make Control key do Control
+        ;;(setq ns-function-modifier 'hyper)   ; make Fn key do Hyper
+        ;; I am using a German PC keyboard on my Mac so I have to leave the right option undefined in order to get {[]}\@~|²³
+        (setq mac-right-option-modifier nil)
+        ;; MacOS has bindings for <home> and <end> to *-of-buffer:
+        (global-set-key (kbd "<home>") 'beginning-of-line)
+        (global-set-key (kbd "C-<home>") 'beginning-of-buffer)
+        (global-set-key (kbd "<end>") 'end-of-line)
+        (global-set-key (kbd "C-<end>") 'end-of-buffer)
+        (load-treemacs)))
 
-    (use-package treemacs-magit
-      :after treemacs magit)
+     ((string-equal system-type "windows-nt") ; Microsoft Windows
+      (progn
+        (setq-default tide-tsserver-executable "c:/Users/andreas/AppData/Roaming/npm/bin/tsserver")
+        ;; make PC keyboard's Win key or other to type Super or Hyper, for emacs running on Windows.
+        (setq w32-pass-lwindow-to-system nil)
+        (setq w32-lwindow-modifier 'super)    ; Left Windows key
+        (setq w32-pass-rwindow-to-system nil)
+        (setq w32-rwindow-modifier 'super)    ; Right Windows key
+        (setq w32-pass-apps-to-system nil)
+        (setq w32-apps-modifier 'hyper)       ; Menu/App key
+        (load-treemacs))))
 
-    ;; https://github.com/emacs-lsp/lsp-treemacs
-    (use-package lsp-treemacs
-      :after treemacs
-      :config
-      (lsp-metals-treeview-enable t)
-      (setq lsp-metals-treeview-show-when-views-received t)))
-
-  (defun load-neotree ()
-    ;;https://github.com/jaypei/emacs-neotree
-    (use-package neotree
-      :init
-      (setq-default neo-show-hidden-files t)
-      (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-      (global-set-key [f8] 'neotree-toggle)))
-
-  (cond
-   ((string-equal system-type "usg-unix-v") ; UNIX System V
-    (progn
-      (setq-default tide-tsserver-executable "/export/home/andreas/npm/bin/tsserver")
-      ;; We have a problem with graphics in OpenIndiana, thus we use the simpler neotree for it.
-      ;; treemacs is also not working for Debian Stretch (emacs-25.1.1).
-      (load-neotree)))
-
-   ((string-equal system-type "gnu/linux")
-    (progn
-      (setq-default tide-tsserver-executable "/home/andreas/npm/bin/tsserver")
-      (load-neotree)))
-
-   ((string-equal system-type "darwin")
-    (progn
-      (setq-default tide-tsserver-executable "/Users/andreas/npm/bin/tsserver")
-
-      ;; set keys for Apple keyboard, for emacs in OS X
-      (setq mac-command-modifier 'super)   ; make cmd key do Super
-      (setq mac-option-modifier  'meta)    ; make opt key do Meta
-      (setq mac-control-modifier 'control) ; make Control key do Control
-      ;;(setq ns-function-modifier 'hyper)   ; make Fn key do Hyper
-      ;; I am using a German PC keyboard on my Mac so I have to leave the right option undefined in order to get {[]}\@~|²³
-      (setq mac-right-option-modifier nil)
-      ;; MacOS has bindings for <home> and <end> to *-of-buffer:
-      (global-set-key (kbd "<home>") 'beginning-of-line)
-      (global-set-key (kbd "C-<home>") 'beginning-of-buffer)
-      (global-set-key (kbd "<end>") 'end-of-line)
-      (global-set-key (kbd "C-<end>") 'end-of-buffer)
-      (load-treemacs)))
-
-   ((string-equal system-type "windows-nt") ; Microsoft Windows
-    (progn
-      (setq-default tide-tsserver-executable "c:/Users/andreas/AppData/Roaming/npm/bin/tsserver")
-      ;; make PC keyboard's Win key or other to type Super or Hyper, for emacs running on Windows.
-      (setq w32-pass-lwindow-to-system nil)
-      (setq w32-lwindow-modifier 'super)    ; Left Windows key
-      (setq w32-pass-rwindow-to-system nil)
-      (setq w32-rwindow-modifier 'super)    ; Right Windows key
-      (setq w32-pass-apps-to-system nil)
-      (setq w32-apps-modifier 'hyper)       ; Menu/App key
-      (load-treemacs))))
+  (use-package exec-path-from-shell
+    :config (when (memq window-system '(mac ns x))
+              (exec-path-from-shell-initialize)))
 #+END_SRC
-
 * Holidays
 #+BEGIN_SRC emacs-lisp
-(setq holiday-general-holidays
-      '((holiday-fixed 1 1 "Neujahr")
-        (holiday-fixed 5 1 "Tag der Arbeit")
-        (holiday-fixed 10 3 "Tag der deutschen Einheit")))
-(setq holiday-christian-holidays
-      '((holiday-fixed 12 25 "1. Weihnachtstag")
-        (holiday-fixed 12 26 "2. Weihnachtstag")
-        (holiday-fixed 1 6 "Heilige 3 Könige")
-        (holiday-fixed 10 31 "Reformationstag")
-        (holiday-fixed 11 1 "Allerheiligen")
-        ;; Date of Easter calculation taken from holidays.el.
-        (let* ((century (1+ (/ displayed-year 100)))
-               (shifted-epact (% (+ 14 (* 11 (% displayed-year 19))
-                                    (- (/ (* 3 century) 4))
-                                    (/ (+ 5 (* 8 century)) 25)
-                                    (* 30 century))
-                                 30))
-               (adjusted-epact (if (or (= shifted-epact 0)
-                                       (and (= shifted-epact 1)
-                                            (< 10 (% displayed-year 19))))
-                                   (1+ shifted-epact)
-                                 shifted-epact))
-               (paschal-moon (- (calendar-absolute-from-gregorian
-                                 (list 4 19 displayed-year))
-                                adjusted-epact))
-               (easter (calendar-dayname-on-or-before 0 (+ paschal-moon 7))))
-          (holiday-filter-visible-calendar
-           (mapcar
-            (lambda (l)
-              (list (calendar-gregorian-from-absolute (+ easter (car l)))
-                    (nth 1 l)))
-            '(( -2 "Karfreitag")
-              (  0 "Ostersonntag")
-              ( +1 "Ostermontag")
-              (+39 "Christi Himmelfahrt")
-              (+49 "Pfingstsonntag")
-              (+50 "Pfingstmontag")
-              (+60 "Fronleichnam")))))))
-(setq calendar-holidays (append holiday-general-holidays holiday-christian-holidays))
+  (setq holiday-general-holidays
+        '((holiday-fixed 1 1 "Neujahr")
+          (holiday-fixed 5 1 "Tag der Arbeit")
+          (holiday-fixed 10 3 "Tag der deutschen Einheit")))
+  (setq holiday-christian-holidays
+        '((holiday-fixed 12 25 "1. Weihnachtstag")
+          (holiday-fixed 12 26 "2. Weihnachtstag")
+          (holiday-fixed 1 6 "Heilige 3 Könige")
+          (holiday-fixed 10 31 "Reformationstag")
+          (holiday-fixed 11 1 "Allerheiligen")
+          ;; Date of Easter calculation taken from holidays.el.
+          (let* ((century (1+ (/ displayed-year 100)))
+                 (shifted-epact (% (+ 14 (* 11 (% displayed-year 19))
+                                      (- (/ (* 3 century) 4))
+                                      (/ (+ 5 (* 8 century)) 25)
+                                      (* 30 century))
+                                   30))
+                 (adjusted-epact (if (or (= shifted-epact 0)
+                                         (and (= shifted-epact 1)
+                                              (< 10 (% displayed-year 19))))
+                                     (1+ shifted-epact)
+                                   shifted-epact))
+                 (paschal-moon (- (calendar-absolute-from-gregorian
+                                   (list 4 19 displayed-year))
+                                  adjusted-epact))
+                 (easter (calendar-dayname-on-or-before 0 (+ paschal-moon 7))))
+            (holiday-filter-visible-calendar
+             (mapcar
+              (lambda (l)
+                (list (calendar-gregorian-from-absolute (+ easter (car l)))
+                      (nth 1 l)))
+              '(( -2 "Karfreitag")
+                (  0 "Ostersonntag")
+                ( +1 "Ostermontag")
+                (+39 "Christi Himmelfahrt")
+                (+49 "Pfingstsonntag")
+                (+50 "Pfingstmontag")
+                (+60 "Fronleichnam")))))))
+  (setq calendar-holidays (append holiday-general-holidays holiday-christian-holidays))
 #+END_SRC
 * Server
 #+BEGIN_SRC emacs-lisp
