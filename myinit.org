@@ -1,7 +1,14 @@
 * User Info
 #+BEGIN_SRC emacs-lisp
-(setq user-full-name "Andreas Wacknitz")
-(setq user-mail-address "a.wacknitz@gmx.de")
+  (setq user-full-name "Andreas Wacknitz")
+  (setq user-mail-address "a.wacknitz@gmx.de")
+
+  ;; See here for a short & useful tutorial:
+  ;; https://alvinalexander.com/git/git-show-change-username-email-address
+  (when (equal ""
+               (shell-command-to-string "git config user.name"))
+    (shell-command (concat "git config --global user.name \"" user-full-name "\""))
+    (shell-command (concat "git config --global user.email \"" user-mail-address "\"")))
 #+END_SRC
 * UTF-8
 #+BEGIN_SRC emacs-lisp
@@ -18,6 +25,20 @@
   (setq use-package-always-ensure t)
   (eval-when-compile
     (require 'use-package))
+
+  (use-package auto-package-update
+    :config
+    ;; Delete residual old versions
+    (setq auto-package-update-delete-old-versions t)
+    ;; Do not bother me when updates have taken place.
+    (setq auto-package-update-hide-results t)
+    ;; Update installed packages at startup if there is an update pending.
+    (auto-package-update-maybe))
+
+  (use-package diminish
+    :demand t
+    :config ;; Let's hide some markers.
+    (diminish  'org-indent-mode))
 #+END_SRC
 * Keyboard bindings
 ** Explanations about Emacs special keys
@@ -124,7 +145,6 @@
   (setq echo-keystrokes 0.1)          ;; Show keystrokes in progress
   (setq delete-by-moving-to-trash t)  ;; Move files to trash when deleting
   (auto-compression-mode t)           ;; Transparently open compressed files
-  (electric-pair-mode 1)              ;; Auto-close brackets and double quotes
   (delete-selection-mode 1)           ;; Remove text in active region if inserting text
 
   ;; Smooth Scroll:
@@ -141,6 +161,15 @@
   (setq require-final-newline t)
 
   (defalias 'list-buffers 'ibuffer)
+
+  (defun display-startup-echo-area-message ()
+    "The message that is shown after 'user-init-file' is loaded."
+    (message
+     (concat "Welcome "      user-full-name
+             "! Emacs "      emacs-version
+             "; Org-mode "   org-version
+             "; System "     (system-name)
+             "; Time "       (emacs-init-time))))
 
   (load custom-file 'NOERROR)
 #+END_SRC
@@ -206,6 +235,10 @@
   (use-package mode-icons
     :config
     (mode-icons-mode))
+
+  ;; Make dired look pretty
+  (use-package all-the-icons-dired
+    :hook (dired-mode . all-the-icons-dired-mode))
 #+END_SRC
 *** Tabs
 #+BEGIN_SRC emacs-lisp
@@ -318,6 +351,12 @@
   ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Apropos.html.
   apropos-do-all t
 
+   ;; Text selected with the mouse is automatically copied to clipboard.
+   mouse-drag-copy-region t
+
+   ;; Delete Selection mode lets you treat an Emacs region much like a typical text selection outside of Emacs: You can replace the active region. We can delete selected text just by hitting the backspace key.
+   delete-selection-mode 1
+
   ;; Mouse yank commands yank at point instead of at click.
   mouse-yank-at-point t)
 #+END_SRC
@@ -350,7 +389,10 @@
     :bind
     ("C-x j" . smartparens-mode))
 #+END_SRC
-
+I prefer electric-pair-mode over smartparens:
+##+BEGIN_SRC emacs-lisp
+  (electric-pair-mode 1)
+##+END_SRC
 *** OpenWith
 ##+BEGIN_SRC emacs-lisp
   (when (require 'openwith nil 'noerror)
@@ -819,6 +861,25 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 
   (use-package forge
     :after magit)
+
+  (require 'magit-git)
+
+  (defun my/magit-check-file-and-popup ()
+    "If the file is version controlled with git
+    and has uncommitted changes, open the magit status popup."
+    (let ((file (buffer-file-name)))
+      (when (and file (magit-anything-modified-p t file))
+        (message "This file has uncommited changes!")
+        (when nil) ;; Became annyoying after some time.
+        (split-window-below)
+        (other-window 1)
+        (magit-status))))
+
+  ;; I usually have local variables, so I want the message to show
+  ;; after the locals have been loaded.
+  (add-hook 'find-file-hook
+            '(lambda ()
+               (add-hook 'hack-local-variables-hook 'my/magit-check-file-and-popup)))
 
   ;; Emacs package for highlighting uncommitted changes
   (use-package diff-hl
