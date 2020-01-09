@@ -436,9 +436,26 @@ across sessions on exiting Emacs - you can then access this list through a comma
     Prompt the next possible key bindings after a short wait.
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
+    :diminish
     :config
-    (which-key-mode t)
-    :diminish nil)
+    (which-key-mode t))
+#+END_SRC
+*** undo tree
+    Allow tree-semantics for undo operations.
+    Execute (undo-tree-visualize) then navigate along the tree to witness
+    changes being made to your file live!
+#+BEGIN_SRC emacs-lisp
+  (use-package undo-tree
+    :diminish                       ;; Don't show an icon in the modeline
+    :config
+      ;; Always have it on
+      (global-undo-tree-mode)
+
+      ;; Each node in the undo tree should have a timestamp.
+      (setq undo-tree-visualizer-timestamps t)
+
+      ;; Show a diff window displaying changes between undo nodes.
+      (setq undo-tree-visualizer-diff t))
 #+END_SRC
 *** esup
     Emacs Start Up Profiler (esup) benchmarks Emacs startup time without leaving Emacs.
@@ -525,7 +542,7 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
   (use-package ivy)
 
   (use-package swiper
-    :diminish ivy-mode
+    :diminish
     :bind
     (("C-r" . swiper)
      ("C-c C-r" . ivy-resume)
@@ -537,6 +554,7 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     (setq ivy-use-virtual-buffers t))
 
   (use-package counsel
+    :diminish
     :commands (counsel-mode)
     :bind
     (("C-s" . counsel-grep-or-swiper)
@@ -641,11 +659,11 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 *** Company - a text completion framework for Emacs. The name stands for "complete anything"
     http://company-mode.github.io
 #+BEGIN_SRC emacs-lisp
-(use-package company
-  :diminish company-mode
-  :defer 2
-  :bind ("C-<tab>" . company-complete)
-  :config (global-company-mode t))
+  (use-package company
+    :diminish
+    :defer 2
+    :bind ("C-<tab>" . company-complete)
+    :config (global-company-mode t))
 #+END_SRC
 *** Projectile - easy project management and navigation
     https://github.com/bbatsov/projectile
@@ -951,26 +969,43 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
 #+END_SRC
 *** LSP
 #+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode
-    :hook ((c-mode         ; clangd
-            c-or-c++-mode  ; clangd
-            java-mode      ; eclipse-jdtls
-            js-mode        ; typescript-language-server
-            python-mode    ; pyls
-            dart-mode      ; dart analysis server
-            ) . lsp)
-    :commands lsp
-    :config
-    (setq lsp-prefer-flymake nil)
-    (setq lsp-enable-symbol-highlighting nil)
-    (setq lsp-signature-auto-activate nil))
-
-  (use-package lsp-java
-    :after lsp)
-
   (use-package company-lsp
-    :commands company-lsp
-    :config (setq company-lsp-cache-candidates 'auto))
+    :config
+    (push 'company-lsp company-backends))
+
+  (use-package lsp-mode
+    :commands (lsp lsp-register-custom-settings)
+    ;; reformat code and add missing (or remove old) imports
+    :hook ((before-save . lsp-format-buffer)
+           (before-save . lsp-organize-imports))
+    :bind (("C-c d" . lsp-describe-thing-at-point)
+           ("C-c e n" . flymake-goto-next-error)
+           ("C-c e p" . flymake-goto-prev-error)
+           ("C-c e r" . lsp-find-references)
+           ("C-c e R" . lsp-rename)
+           ("C-c e i" . lsp-find-implementation)
+           ("C-c e t" . lsp-find-type-definition)))
+
+  ;; (use-package lsp-mode
+  ;;   :hook ((c-mode         ; clangd
+  ;;           c-or-c++-mode  ; clangd
+  ;;           java-mode      ; eclipse-jdtls
+  ;;           js-mode        ; typescript-language-server
+  ;;           python-mode    ; pyls
+  ;;           dart-mode      ; dart analysis server
+  ;;           ) . lsp)
+  ;;   :commands lsp
+  ;;   :config
+  ;;   (setq lsp-prefer-flymake nil)
+  ;;   (setq lsp-enable-symbol-highlighting nil)
+  ;;   (setq lsp-signature-auto-activate nil))
+
+  ;; (use-package lsp-java
+  ;;   :after lsp)
+
+  ;; (use-package company-lsp
+  ;;   :commands company-lsp
+  ;;   :config (setq company-lsp-cache-candidates 'auto))
 #+END_SRC
 * Web
 #+BEGIN_SRC emacs-lisp
