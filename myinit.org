@@ -163,24 +163,24 @@
 #+END_SRC
 *** Font settings
 #+BEGIN_SRC emacs-lisp
-  (if window-system
-      (if (> (x-display-pixel-height) 1200)
-          (set-frame-font "Fira Code 20" nil t)
-        (set-frame-font "Fira Code 15" nil t)))
+(if window-system
+    (if (> (x-display-pixel-height) 1200)
+        (set-frame-font "Fira Code 20" nil t)
+      (set-frame-font "Fira Code 15" nil t)))
 #+END_SRC
 *** Set frame size
 #+BEGIN_SRC emacs-lisp
-  (defun set-frame-size-according-to-resolution ()
-    (interactive)
-    (if window-system
-        (progn
-          (if (> (x-display-pixel-width) 1280)
-              (add-to-list 'default-frame-alist (cons 'width 120))
-            (add-to-list 'default-frame-alist (cons 'width 80)))
-          (add-to-list 'default-frame-alist
-                      (cons 'height (min 38 (/ (- (x-display-pixel-height) 320)
-                                          (frame-char-height))))))))
-  (set-frame-size-according-to-resolution)
+(defun set-frame-size-according-to-resolution ()
+  (interactive)
+  (if window-system
+      (progn
+        (if (> (x-display-pixel-width) 1280)
+            (add-to-list 'default-frame-alist (cons 'width 120))
+          (add-to-list 'default-frame-alist (cons 'width 80)))
+        (add-to-list 'default-frame-alist
+                     (cons 'height (min 38 (/ (- (x-display-pixel-height) 320)
+                                              (frame-char-height))))))))
+(set-frame-size-according-to-resolution)
 #+END_SRC
 *** Icons
     https://github.com/domtronn/all-the-icons.el
@@ -189,104 +189,103 @@
     Remember to install the font files:
     M-x all-the-icons-install-fonts
 #+BEGIN_SRC emacs-lisp
-  (use-package all-the-icons
-    :config (setq all-the-icons-scale-factor 1.0))
+(use-package all-the-icons
+  :config (setq all-the-icons-scale-factor 1.0))
 
-  (use-package all-the-icons-ivy
-    :config
-    (setq all-the-icons-ivy-buffer-commands '())
-    (setq all-the-icons-ivy-file-commands
-          '(counsel-find-file counsel-file-jump counsel-recentf counsel-projectile-find-file counsel-projectile-find-dir))
-    :hook (after-init . all-the-icons-ivy-setup))
+(use-package all-the-icons-ivy
+  :config
+  (setq all-the-icons-ivy-buffer-commands '())
+  (setq all-the-icons-ivy-file-commands
+        '(counsel-find-file counsel-file-jump counsel-recentf counsel-projectile-find-file counsel-projectile-find-dir))
+  :hook (after-init . all-the-icons-ivy-setup))
 
-  (use-package mode-icons
-    :config
-    (mode-icons-mode))
+(use-package mode-icons
+  :config
+  (mode-icons-mode))
 
-  ;; Make dired look pretty
-  (use-package all-the-icons-dired
-    :hook (dired-mode . all-the-icons-dired-mode))
+;; Make dired look pretty
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
 #+END_SRC
 *** Tabs
 #+BEGIN_SRC emacs-lisp
-  (use-package centaur-tabs
-    :demand
-    :init (setq centaur-tabs-set-bar 'over)
-    :config
-    (centaur-tabs-mode +1)
-    (centaur-tabs-headline-match)
-    (setq centaur-tabs-set-modified-marker t
-          centaur-tabs-modified-marker " ● "
-          centaur-tabs-cycle-scope 'tabs
-          centaur-tabs-height 30
-          centaur-tabs-set-icons t
-          centaur-tabs-close-button " × ")
-    (when (member "Arial" (font-family-list))
-        (centaur-tabs-change-fonts "Arial" 130))
-    (centaur-tabs-group-by-projectile-project)
-    :bind
-    ("C-S-<tab>" . centaur-tabs-backward)
-    ("C-<tab>" . centaur-tabs-forward))
+(use-package centaur-tabs
+  :demand
+  :init (setq centaur-tabs-set-bar 'over)
+  :config
+  (centaur-tabs-mode +1)
+  (centaur-tabs-headline-match)
+  (setq centaur-tabs-set-modified-marker t
+        centaur-tabs-modified-marker " ● "
+        centaur-tabs-cycle-scope 'tabs
+        centaur-tabs-height 30
+        centaur-tabs-set-icons t
+        centaur-tabs-close-button " × ")
+  (when (member "Arial" (font-family-list))
+    (centaur-tabs-change-fonts "Arial" 130))
+  (centaur-tabs-group-by-projectile-project)
+  :bind
+  ("C-S-<tab>" . centaur-tabs-backward)
+  ("C-<tab>" . centaur-tabs-forward))
 #+END_SRC
 *** telephone-line
     Better mode line
 #+BEGIN_SRC emacs-lisp
-  (use-package powerline
-    :config
-    (powerline-center-theme))
+(use-package powerline
+  :config
+  (powerline-center-theme))
 #+END_SRC
 *** pretty - base set of pretty symbols.
 #+BEGIN_SRC emacs-lisp
-  (defvar base-prettify-symbols-alist '(("lambda" . ?λ)))
+(defvar base-prettify-symbols-alist '(("lambda" . ?λ)))
 
-  (defun my-lisp-prettify-symbols-hook ()
-    "Set pretty symbols for lisp modes."
-    (setq prettify-symbols-alist base-prettify-symbols-alist))
+(defun my-lisp-prettify-symbols-hook ()
+  "Set pretty symbols for lisp modes."
+  (setq prettify-symbols-alist base-prettify-symbols-alist))
 
-  (defun my-python-prettify-symbols-hook ()
-    "Set pretty symbols for python."
-    (setq prettify-symbols-alist base-prettify-symbols-alist))
+(defun my-python-prettify-symbols-hook ()
+  "Set pretty symbols for python."
+  (setq prettify-symbols-alist base-prettify-symbols-alist))
 
-  (defun my-js-prettify-symbols-hook ()
-    "Set pretty symbols for JavaScript."
-    (setq prettify-symbols-alist
-          (append '(("function" . ?ƒ)) base-prettify-symbols-alist)))
+(defun my-js-prettify-symbols-hook ()
+  "Set pretty symbols for JavaScript."
+  (setq prettify-symbols-alist
+        (append '(("function" . ?ƒ)) base-prettify-symbols-alist)))
 
-  (defun my-prettify-symbols-hook ()
-    "Set pretty symbols for non-lisp programming modes."
-    (setq prettify-symbols-alist
-          (append '(("==" . ?≡)
-                    ("!=" . ?≠)
-                    ("<=" . ?≤)
-                    (">=" . ?≥)
-                    ("<-" . ?←)
-                    ("->" . ?→)
-                    ("<=" . ?⇐)
-                    ("=>" . ?⇒))
-                  base-prettify-symbols-alist)))
+(defun my-prettify-symbols-hook ()
+  "Set pretty symbols for non-lisp programming modes."
+  (setq prettify-symbols-alist
+        (append '(("==" . ?≡)
+                  ("!=" . ?≠)
+                  ("<=" . ?≤)
+                  (">=" . ?≥)
+                  ("<-" . ?←)
+                  ("->" . ?→)
+                  ("<=" . ?⇐)
+                  ("=>" . ?⇒))
+                base-prettify-symbols-alist)))
 
-  ;; Hook 'em up.
-  (add-hook 'emacs-lisp-mode-hook 'my-lisp-prettify-symbols-hook)
-  (add-hook 'web-mode-hook 'my-prettify-symbols-hook)
-  (add-hook 'js-mode-hook 'my-js-prettify-symbols-hook)
-  (add-hook 'python-mode-hook 'my-python-prettify-symbols-hook)
-  (add-hook 'prog-mode-hook 'my-prettify-symbols-hook)
+;; Hook 'em up.
+(add-hook 'emacs-lisp-mode-hook 'my-lisp-prettify-symbols-hook)
+(add-hook 'web-mode-hook 'my-prettify-symbols-hook)
+(add-hook 'js-mode-hook 'my-js-prettify-symbols-hook)
+(add-hook 'python-mode-hook 'my-python-prettify-symbols-hook)
+(add-hook 'prog-mode-hook 'my-prettify-symbols-hook)
 #+END_SRC
 *** ido - Interactively do things
     I don't use this because I prefer swiper:
 *** rainbow-delimiters - parenthesis change color depending on depth
 #+BEGIN_SRC emacs-lisp
-  (use-package rainbow-delimiters
-    :defer t
-    :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+(use-package rainbow-delimiters
+  :defer t
+  :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 #+END_SRC
 *** rainbox-blocks - understand Clojure/Lisp code at a glance using block highlighting.
 #+BEGIN_SRC emacs-lisp
-  (use-package rainbow-blocks
-    :defer t
-    :init (add-hook 'clojure-mode-hook 'rainbow-blocks-mode))
+(use-package rainbow-blocks
+  :defer t
+  :init (add-hook 'clojure-mode-hook 'rainbow-blocks-mode))
 #+END_SRC
-
 *** highlight-symbol
     Quickly highlight a symbol throughout the buffer and cycle through its locations.
 #+BEGIN_SRC emacs-lisp
@@ -329,32 +328,32 @@
 #+END_SRC
 *** Parenthesis
 #+BEGIN_SRC emacs-lisp
-  ;; Automatic parenthesis
-  (use-package smartparens
-    :diminish
-    smartparens-mode
-    :commands
-    smartparens-strict-mode
-    smartparens-mode
-    sp-restrict-to-pairs-interactive
-    sp-local-pair
-    :config
-    (require 'smartparens-config)
-    (sp-use-smartparens-bindings)
-    (sp-pair "(" ")" :wrap "C-(")
-    (sp-pair "[" "]" :wrap "s-[")
-    (sp-pair "{" "}" :wrap "C-{")
-    (bind-key "s-<backspace>" 'sp-backward-kill-sexp smartparens-mode-map)
-    (bind-key "s-<delete>" 'sp-kill-sexp smartparens-mode-map)
-    (bind-key "s-<backspace>" 'sp-backward-kill-sexp smartparens-mode-map)
-    (bind-key "s-<home>" 'sp-beginning-of-sexp smartparens-mode-map)
-    (bind-key "s-<end>" 'sp-end-of-sexp smartparens-mode-map)
-    (bind-key "s-<up>" 'sp-beginning-of-previous-sexp smartparens-mode-map)
-    (bind-key "s-<down>" 'sp-next-sexp smartparens-mode-map)
-    (bind-key "s-<left>" 'sp-backward-up-sexp smartparens-mode-map)
-    (bind-key "s-<right>" 'sp-down-sexp smartparens-mode-map)
-    :bind
-    ("C-x j" . smartparens-mode))
+;; Automatic parenthesis
+(use-package smartparens
+  :diminish
+  smartparens-mode
+  :commands
+  smartparens-strict-mode
+  smartparens-mode
+  sp-restrict-to-pairs-interactive
+  sp-local-pair
+  :config
+  (require 'smartparens-config)
+  (sp-use-smartparens-bindings)
+  (sp-pair "(" ")" :wrap "C-(")
+  (sp-pair "[" "]" :wrap "s-[")
+  (sp-pair "{" "}" :wrap "C-{")
+  (bind-key "s-<backspace>" 'sp-backward-kill-sexp smartparens-mode-map)
+  (bind-key "s-<delete>" 'sp-kill-sexp smartparens-mode-map)
+  (bind-key "s-<backspace>" 'sp-backward-kill-sexp smartparens-mode-map)
+  (bind-key "s-<home>" 'sp-beginning-of-sexp smartparens-mode-map)
+  (bind-key "s-<end>" 'sp-end-of-sexp smartparens-mode-map)
+  (bind-key "s-<up>" 'sp-beginning-of-previous-sexp smartparens-mode-map)
+  (bind-key "s-<down>" 'sp-next-sexp smartparens-mode-map)
+  (bind-key "s-<left>" 'sp-backward-up-sexp smartparens-mode-map)
+  (bind-key "s-<right>" 'sp-down-sexp smartparens-mode-map)
+  :bind
+  ("C-x j" . smartparens-mode))
 #+END_SRC
 I prefer electric-pair-mode over smartparens:
 ##+BEGIN_SRC emacs-lisp
@@ -394,25 +393,43 @@ I prefer electric-pair-mode over smartparens:
 
     (openwith-mode 1))
 ##+END_SRC
+*** Wave light near the cursor
+#+BEGIN_SRC emacs-lisp
+(use-package beacon
+  :diminish
+  :config (setq beacon-color "#666600")
+  :hook   ((org-mode text-mode) . beacon-mode))
+#+END_SRC
+*** Dimming unused Windows
+#+BEGIN_SRC emacs-lisp
+(use-package dimmer
+  :config (dimmer-mode))
+#+END_SRC
+*** Text zoom keys
+    C-x C-0 restores the default font size
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+#+END_SRC
 * Theming
 *** material-theme
 #+BEGIN_SRC emacs-lisp
-  (use-package material-theme
-    :config (load-theme 'material t))
+(use-package material-theme
+  :config (load-theme 'material t))
 #+END_SRC
 *** doom-themes
 ##+BEGIN_SRC emacs-lisp
-  (use-package doom-themes
-    :config
-    (load-theme 'doom-vibrant t))
+(use-package doom-themes
+:config
+(load-theme 'doom-vibrant t))
 ##+END_SRC
 *** spacemacs-theme
 ##+BEGIN_SRC emacs-lisp
-  (use-package ewal-spacemacs-themes
-    :config
-    (setq spacemacs-theme-comment-bg nil
-          spacemacs-theme-comment-italic t)
-    (load-theme 'spacemacs-dark t))
+(use-package ewal-spacemacs-themes
+  :config
+  (setq spacemacs-theme-comment-bg nil
+        spacemacs-theme-comment-italic t)
+  (load-theme 'spacemacs-dark t))
 ##+END_SRC
 * General
 *** uniquify
@@ -425,75 +442,75 @@ Other buffer name styles are also available.
 
 uniquify is distributed with GnuEmacs.
 #+BEGIN_SRC emacs-lisp
-  (use-package uniquify-files)
+(use-package uniquify-files)
 #+END_SRC
 *** recentf
 Recentf is a minor mode that builds a list of recently opened files. This list is is automatically saved
 across sessions on exiting Emacs - you can then access this list through a command or the menu.
 #+BEGIN_SRC emacs-lisp
-  (use-package recentf
-    :config
-    (setq recentf-max-saved-items 25
-          recentf-max-menu-items 25
-          recentf-save-file (concat user-emacs-directory ".recentf"))
-    (recentf-mode t)
-    :init
-    (global-set-key (kbd "C-x C-r") 'recentf-open-files)
-    )
+(use-package recentf
+  :config
+  (setq recentf-max-saved-items 25
+        recentf-max-menu-items 25
+        recentf-save-file (concat user-emacs-directory ".recentf"))
+  (recentf-mode t)
+  :init
+  (global-set-key (kbd "C-x C-r") 'recentf-open-files)
+  )
 #+END_SRC
 *** Which Key
     Prompt the next possible key bindings after a short wait.
 #+BEGIN_SRC emacs-lisp
-  (use-package which-key
-    :diminish
-    :config
-    (which-key-mode t))
+(use-package which-key
+  :diminish
+  :config
+  (which-key-mode t))
 #+END_SRC
 *** undo tree
     Allow tree-semantics for undo operations.
     Execute (undo-tree-visualize) then navigate along the tree to witness
     changes being made to your file live!
 #+BEGIN_SRC emacs-lisp
-  (use-package undo-tree
-    :diminish                       ;; Don't show an icon in the modeline
-    :config
-      ;; Always have it on
-      (global-undo-tree-mode)
+(use-package undo-tree
+  :diminish                       ;; Don't show an icon in the modeline
+  :config
+  ;; Always have it on
+  (global-undo-tree-mode)
 
-      ;; Each node in the undo tree should have a timestamp.
-      (setq undo-tree-visualizer-timestamps t)
+  ;; Each node in the undo tree should have a timestamp.
+  (setq undo-tree-visualizer-timestamps t)
 
-      ;; Show a diff window displaying changes between undo nodes.
-      (setq undo-tree-visualizer-diff t))
+  ;; Show a diff window displaying changes between undo nodes.
+  (setq undo-tree-visualizer-diff t))
 #+END_SRC
 *** esup
     Emacs Start Up Profiler (esup) benchmarks Emacs startup time without leaving Emacs.
     https://github.com/jschaf/esup
 #+BEGIN_SRC emacs-lisp
-  (use-package esup)
+(use-package esup)
 #+END_SRC
 *** Dashboard
     https://github.com/emacs-dashboard/emacs-dashboard
 #+BEGIN_SRC emacs-lisp
-  (use-package dashboard
-    :config
-    (dashboard-setup-startup-hook)
-    :init
-    (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
-    ;; Set the banner
-    (setq dashboard-startup-banner 'logo)
-    ;; Value can be
-    ;; 'official which displays the official emacs logo
-    ;; 'logo which displays an alternative emacs logo
-    ;; 1, 2 or 3 which displays one of the text banners
-    ;; "path/to/your/image.png" which displays whatever image you would prefer
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook)
+  :init
+  (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
+  ;; Set the banner
+  (setq dashboard-startup-banner 'logo)
+  ;; Value can be
+  ;; 'official which displays the official emacs logo
+  ;; 'logo which displays an alternative emacs logo
+  ;; 1, 2 or 3 which displays one of the text banners
+  ;; "path/to/your/image.png" which displays whatever image you would prefer
 
-    ;; Content is not centered by default. To center, set
-    (setq dashboard-center-content t)
+  ;; Content is not centered by default. To center, set
+  (setq dashboard-center-content t)
 
-    ;; To disable shortcut "jump" indicators for each section, set
-    ;;(setq dashboard-show-shortcuts nil)
-    )
+  ;; To disable shortcut "jump" indicators for each section, set
+  ;;(setq dashboard-show-shortcuts nil)
+  )
 #+END_SRC
 *** Tramp
 TRAMP is a package providing an abstraction layer that can be used for accessing remote files on different machines.
@@ -502,34 +519,34 @@ it hooks into Emacs at a low enough level that other packages need not be aware 
 
 TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 #+BEGIN_SRC emacs-lisp
-  (use-package tramp
-    :defer 5
-    :config
-    (with-eval-after-load 'tramp-cache
-      (setq tramp-persistency-file-name "~/.emacs.d/tramp"))
-    (setq
-      tramp-default-user-alist '(("\\`su\\(do\\)?\\'" nil "root"))
-      tramp-adb-program "adb"
-      ;; Default connection method for TRAMP - remote files plugin
-      tramp-default-method "ssh"
-      ;; use the settings in ~/.ssh/config instead of Tramp's
-      tramp-use-ssh-controlmaster-options nil
-      ;; don't generate backups for remote files opened as root (security hazzard)
-      backup-enable-predicate
-      (lambda (name)
-        (and (normal-backup-enable-predicate name)
-            (not (let ((method (file-remote-p name 'method)))
-                  (when (stringp method)
-                    (member method '("su" "sudo")))))))))
+(use-package tramp
+  :defer 5
+  :config
+  (with-eval-after-load 'tramp-cache
+    (setq tramp-persistency-file-name "~/.emacs.d/tramp"))
+  (setq
+   tramp-default-user-alist '(("\\`su\\(do\\)?\\'" nil "root"))
+   tramp-adb-program "adb"
+   ;; Default connection method for TRAMP - remote files plugin
+   tramp-default-method "ssh"
+   ;; use the settings in ~/.ssh/config instead of Tramp's
+   tramp-use-ssh-controlmaster-options nil
+   ;; don't generate backups for remote files opened as root (security hazzard)
+   backup-enable-predicate
+   (lambda (name)
+     (and (normal-backup-enable-predicate name)
+          (not (let ((method (file-remote-p name 'method)))
+                 (when (stringp method)
+                   (member method '("su" "sudo")))))))))
 #+END_SRC
 *** Paradox Package Manager
     https://github.com/Malabarba/paradox
 #+BEGIN_SRC emacs-lisp
-  (use-package paradox
-    :config
-    (setq paradox-execute-asynchronously t)
-    (setq paradox-automatically-star t)
-    (paradox-enable))
+(use-package paradox
+  :config
+  (setq paradox-execute-asynchronously t)
+  (setq paradox-automatically-star t)
+  (paradox-enable))
 #+END_SRC
 *** hideshow
 #+BEGIN_SRC emacs-lisp
@@ -548,131 +565,131 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     Counsel, a collection of Ivy-enhanced versions of common Emacs commands.
     Swiper, an Ivy-enhanced alternative to isearch.
 #+BEGIN_SRC emacs-lisp
-  (use-package ivy)
+(use-package ivy)
 
-  (use-package swiper
-    :diminish
-    :bind
-    (("C-r" . swiper)
-     ("C-c C-r" . ivy-resume)
-     ("C-c h m" . woman)
-     ("C-x b" . ivy-switch-buffer)
-     ("C-c u" . swiper-all))
-    :config
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t))
+(use-package swiper
+  :diminish
+  :bind
+  (("C-r" . swiper)
+   ("C-c C-r" . ivy-resume)
+   ("C-c h m" . woman)
+   ("C-x b" . ivy-switch-buffer)
+   ("C-c u" . swiper-all))
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t))
 
-  (use-package counsel
-    :diminish
-    :commands (counsel-mode)
-    :bind
-    (("C-s" . counsel-grep-or-swiper)
-     ("M-x" . counsel-M-x)
-     ("C-x C-f" . counsel-find-file)
-     ("C-h f" . counsel-describe-function)
-     ("C-h v" . counsel-describe-variable)
-     ("C-h i" . counsel-info-lookup-symbol)
-     ("C-h l" . counsel-find-library)
-     ("C-h u" . counsel-unicode-char)
-     ("C-c k" . counsel-ag)
-     ("C-x l" . counsel-locate)
-     ("C-c g" . counsel-git)
-     ("C-c j" . counsel-git-grep)
-     ("C-c h i" . counsel-imenu)
-     ("C-S-o" . 'counsel-rhythmbox)
-     ("C-x p" . counsel-list-processes))
-    :init (counsel-mode 1)
-    :config
-    ;; set action options during execution of counsel-find-file
-    ;; replace "frame" with window to open in new window
-    (ivy-set-actions
-     'counsel-find-file
-     '(
-       ("j" find-file-other-window "other")
-       ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
-       ("x" counsel-find-file-extern "open externally")
-       ("d" delete-file "delete")
-       ("r" counsel-find-file-as-root "open as root") ))
+(use-package counsel
+  :diminish
+  :commands (counsel-mode)
+  :bind
+  (("C-s" . counsel-grep-or-swiper)
+   ("M-x" . counsel-M-x)
+   ("C-x C-f" . counsel-find-file)
+   ("C-h f" . counsel-describe-function)
+   ("C-h v" . counsel-describe-variable)
+   ("C-h i" . counsel-info-lookup-symbol)
+   ("C-h l" . counsel-find-library)
+   ("C-h u" . counsel-unicode-char)
+   ("C-c k" . counsel-ag)
+   ("C-x l" . counsel-locate)
+   ("C-c g" . counsel-git)
+   ("C-c j" . counsel-git-grep)
+   ("C-c h i" . counsel-imenu)
+   ("C-S-o" . 'counsel-rhythmbox)
+   ("C-x p" . counsel-list-processes))
+  :init (counsel-mode 1)
+  :config
+  ;; set action options during execution of counsel-find-file
+  ;; replace "frame" with window to open in new window
+  (ivy-set-actions
+   'counsel-find-file
+   '(
+     ("j" find-file-other-window "other")
+     ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
+     ("x" counsel-find-file-extern "open externally")
+     ("d" delete-file "delete")
+     ("r" counsel-find-file-as-root "open as root") ))
 
-    ;; set actions when running C-x b
-    ;; replace "frame" with window to open in new window
-    (ivy-set-actions
-     'ivy-switch-buffer
-     '(
-       ("j" switch-to-buffer-other-frame "other frame")
-       ("k" kill-buffer "kill")
-       ("r" ivy--rename-buffer-action "rename")))
+  ;; set actions when running C-x b
+  ;; replace "frame" with window to open in new window
+  (ivy-set-actions
+   'ivy-switch-buffer
+   '(
+     ("j" switch-to-buffer-other-frame "other frame")
+     ("k" kill-buffer "kill")
+     ("r" ivy--rename-buffer-action "rename")))
+  
+  (ivy-set-actions
+   'counsel-git-grep
+   '(
+     ("j" find-file-other-window "other") )))
 
-    (ivy-set-actions
-     'counsel-git-grep
-     '(
-       ("j" find-file-other-window "other") )))
+(use-package avy
+  :config
+  (avy-setup-default)
+  :bind ("M-s" . avy-goto-char))
 
-  (use-package avy
-    :config
-    (avy-setup-default)
-    :bind ("M-s" . avy-goto-char))
+(use-package ivy-hydra)
+(use-package ivy-xref
+  :init (setq xref-show-xrefs-function #'ivy-xref-show-xrefs))
 
-  (use-package ivy-hydra)
-  (use-package ivy-xref
-    :init (setq xref-show-xrefs-function #'ivy-xref-show-xrefs))
+(use-package ivy-posframe
+  :after ivy
+  :diminish
+  :config
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
+        ivy-posframe-height-alist '((t . 20))
+        ivy-posframe-parameters '((internal-border-width . 10)))
+  (setq ivy-posframe-width 70)
+  (ivy-posframe-mode +1))
 
-  (use-package ivy-posframe
-    :after ivy
-    :diminish
-    :config
-    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
-          ivy-posframe-height-alist '((t . 20))
-          ivy-posframe-parameters '((internal-border-width . 10)))
-    (setq ivy-posframe-width 70)
-    (ivy-posframe-mode +1))
-
-  (use-package ivy-rich
-    :preface
-    (defun ivy-rich-switch-buffer-icon (candidate)
-      (with-current-buffer
-          (get-buffer candidate)
-        (all-the-icons-icon-for-mode major-mode)))
-    :init
-    (setq ivy-rich-display-transformers-list ; max column width sum = (ivy-poframe-width - 1)
-          '(ivy-switch-buffer
-            (:columns
-             ((ivy-rich-switch-buffer-icon (:width 2))
-              (ivy-rich-candidate (:width 35))
-              (ivy-rich-switch-buffer-project (:width 15 :face success))
-              (ivy-rich-switch-buffer-major-mode (:width 13 :face warning)))
-             :predicate
-             #'(lambda (cand) (get-buffer cand)))
-            counsel-M-x
-            (:columns
-             ((counsel-M-x-transformer (:width 35))
-              (ivy-rich-counsel-function-docstring (:width 34 :face font-lock-doc-face))))
-            counsel-describe-function
-            (:columns
-             ((counsel-describe-function-transformer (:width 35))
-              (ivy-rich-counsel-function-docstring (:width 34 :face font-lock-doc-face))))
-            counsel-describe-variable
-            (:columns
-             ((counsel-describe-variable-transformer (:width 35))
-              (ivy-rich-counsel-variable-docstring (:width 34 :face font-lock-doc-face))))
-            package-install
-            (:columns
-             ((ivy-rich-candidate (:width 25))
-              (ivy-rich-package-version (:width 12 :face font-lock-comment-face))
-              (ivy-rich-package-archive-summary (:width 7 :face font-lock-builtin-face))
-              (ivy-rich-package-install-summary (:width 23 :face font-lock-doc-face))))))
-    :config
-    (ivy-rich-mode +1)
-    (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
+(use-package ivy-rich
+  :preface
+  (defun ivy-rich-switch-buffer-icon (candidate)
+    (with-current-buffer
+        (get-buffer candidate)
+      (all-the-icons-icon-for-mode major-mode)))
+  :init
+  (setq ivy-rich-display-transformers-list ; max column width sum = (ivy-poframe-width - 1)
+        '(ivy-switch-buffer
+          (:columns
+           ((ivy-rich-switch-buffer-icon (:width 2))
+            (ivy-rich-candidate (:width 35))
+            (ivy-rich-switch-buffer-project (:width 15 :face success))
+            (ivy-rich-switch-buffer-major-mode (:width 13 :face warning)))
+           :predicate
+           #'(lambda (cand) (get-buffer cand)))
+          counsel-M-x
+          (:columns
+           ((counsel-M-x-transformer (:width 35))
+            (ivy-rich-counsel-function-docstring (:width 34 :face font-lock-doc-face))))
+          counsel-describe-function
+          (:columns
+           ((counsel-describe-function-transformer (:width 35))
+            (ivy-rich-counsel-function-docstring (:width 34 :face font-lock-doc-face))))
+          counsel-describe-variable
+          (:columns
+           ((counsel-describe-variable-transformer (:width 35))
+            (ivy-rich-counsel-variable-docstring (:width 34 :face font-lock-doc-face))))
+          package-install
+          (:columns
+           ((ivy-rich-candidate (:width 25))
+            (ivy-rich-package-version (:width 12 :face font-lock-comment-face))
+            (ivy-rich-package-archive-summary (:width 7 :face font-lock-builtin-face))
+            (ivy-rich-package-install-summary (:width 23 :face font-lock-doc-face))))))
+  :config
+  (ivy-rich-mode +1)
+  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
 #+END_SRC
 *** Company - a text completion framework for Emacs. The name stands for "complete anything"
     http://company-mode.github.io
 #+BEGIN_SRC emacs-lisp
-  (use-package company
-    :diminish
-    :defer 2
-    :bind ("C-<tab>" . company-complete)
-    :config (global-company-mode t))
+(use-package company
+  :diminish
+  :defer 2
+  :bind ("C-<tab>" . company-complete)
+  :config (global-company-mode t))
 #+END_SRC
 *** Projectile - easy project management and navigation
     https://github.com/bbatsov/projectile
@@ -703,39 +720,40 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     check for dirty repositories
     toggle read-only mode for the entire project
 #+BEGIN_SRC emacs-lisp
-  (use-package projectile
-    :commands (projectile-mode)
-    :demand
-    :init
-    (setq projectile-use-git-grep t)
-    (setq projectile-require-project-root nil)
-    (setq projectile-completion-system 'ivy)
-    (setq projectile-sort-order 'recentf)
-    (setq projectile-indexing-method 'hybrid)
-    :bind
-    (("s-f" . projectile-find-file)
-     ("s-F" . projectile-grep)))
+(use-package projectile
+  :commands (projectile-mode)
+  :demand
+  :init
+  (setq
+   projectile-use-git-grep t
+   projectile-require-project-root nil
+   projectile-completion-system 'ivy
+   projectile-sort-order 'recentf
+   projectile-indexing-method 'hybrid)
+  :bind
+  (("s-f" . projectile-find-file)
+   ("s-F" . projectile-grep)))
 
-  (use-package counsel-projectile
-    :commands (counsel-projectile-mode)
-    :init
-    (projectile-mode +1)
-    (counsel-projectile-mode))
+(use-package counsel-projectile
+  :commands (counsel-projectile-mode)
+  :init
+  (projectile-mode +1)
+  (counsel-projectile-mode))
 #+END_SRC
 *** Markdown
 #+BEGIN_SRC emacs-lisp
-  (use-package markdown-mode
-    :commands (markdown-mode gfm-mode)
-    :mode
-    (("README\\.md\\'" . gfm-mode)
-     ("\\.md\\'"       . markdown-mode)
-     ("\\.markdown\\'" . markdown-mode))
-    :init
-    (if (eq system-type 'usg-unix-v)
-        (setq markdown-command "markdown_py")
-      (setq markdown-command "multimarkdown"))
-    :bind
-    (("<f9>" . markdown-preview)))
+(use-package markdown-mode
+  :commands (markdown-mode gfm-mode)
+  :mode
+  (("README\\.md\\'" . gfm-mode)
+   ("\\.md\\'"       . markdown-mode)
+   ("\\.markdown\\'" . markdown-mode))
+  :init
+  (if (eq system-type 'usg-unix-v)
+      (setq markdown-command "markdown_py")
+    (setq markdown-command "multimarkdown"))
+  :bind
+  (("<f9>" . markdown-preview)))
 #+END_SRC
 *** conf-mode - UNIX config files
 #+BEGIN_SRC emacs-lisp
@@ -755,135 +773,136 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
     Highlight escape sequences in Emacs
     https://github.com/dgutov/highlight-escape-sequences
 #+BEGIN_SRC emacs-lisp
-  (use-package highlight-indent-guides
-    :hook (prog-mode . highlight-indent-guides-mode)
-    :diminish
-    :config
-    (setq highlight-indent-guides-method 'character)
-    (setq highlight-indent-guides-character 9615) ; left-align vertical bar
-    (setq highlight-indent-guides-auto-character-face-perc 20))
+(use-package highlight-indent-guides
+  :hook (prog-mode . highlight-indent-guides-mode)
+  :diminish
+  :config
+  (setq
+   highlight-indent-guides-method 'character
+   highlight-indent-guides-character 9615  ;; left-align vertical bar
+   highlight-indent-guides-auto-character-face-perc 20))
 
-  (use-package highlight-symbol
-    :diminish
-    :hook (prog-mode . highlight-symbol-mode)
-    :config (setq highlight-symbol-idle-delay 0.3))
+(use-package highlight-symbol
+  :diminish
+  :hook (prog-mode . highlight-symbol-mode)
+  :config (setq highlight-symbol-idle-delay 0.3))
 
-  (use-package highlight-numbers
-    :hook (prog-mode . highlight-numbers-mode))
+(use-package highlight-numbers
+  :hook (prog-mode . highlight-numbers-mode))
 
-  (use-package highlight-operators
-    :hook (prog-mode . highlight-operators-mode))
+(use-package highlight-operators
+  :hook (prog-mode . highlight-operators-mode))
 
-  (use-package highlight-escape-sequences
-    :hook (prog-mode . hes-mode))
+(use-package highlight-escape-sequences
+  :hook (prog-mode . hes-mode))
 #+END_SRC
 *** flycheck - syntax checker
 #+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-    :init
-    (progn
-      (define-fringe-bitmap 'my-flycheck-fringe-indicator
-        (vector #b00000000
-                #b00000000
-                #b00000000
-                #b00000000
-                #b00000000
-                #b00000000
-                #b00000000
-                #b00011100
-                #b00111110
-                #b00111110
-                #b00111110
-                #b00011100
-                #b00000000
-                #b00000000
-                #b00000000
-                #b00000000
-                #b00000000))
+(use-package flycheck
+  :init
+  (progn
+    (define-fringe-bitmap 'my-flycheck-fringe-indicator
+      (vector #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00011100
+              #b00111110
+              #b00111110
+              #b00111110
+              #b00011100
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000))
 
-      (flycheck-define-error-level 'error
-        :severity 2
-        :overlay-category 'flycheck-error-overlay
-        :fringe-bitmap 'my-flycheck-fringe-indicator
-        :fringe-face 'flycheck-fringe-error)
+    (flycheck-define-error-level 'error
+      :severity 2
+      :overlay-category 'flycheck-error-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-error)
 
-      (flycheck-define-error-level 'warning
-        :severity 1
-        :overlay-category 'flycheck-warning-overlay
-        :fringe-bitmap 'my-flycheck-fringe-indicator
-        :fringe-face 'flycheck-fringe-warning)
+    (flycheck-define-error-level 'warning
+      :severity 1
+      :overlay-category 'flycheck-warning-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-warning)
 
-      (flycheck-define-error-level 'info
-        :severity 0
-        :overlay-category 'flycheck-info-overlay
-        :fringe-bitmap 'my-flycheck-fringe-indicator
-        :fringe-face 'flycheck-fringe-info)))
+    (flycheck-define-error-level 'info
+      :severity 0
+      :overlay-category 'flycheck-info-overlay
+      :fringe-bitmap 'my-flycheck-fringe-indicator
+      :fringe-face 'flycheck-fringe-info)))
 #+END_SRC
 *** magit, forge (formerly magithub) and diff-hl
     https://magit.vc/
     https://github.com/magit/forge
 #+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :bind ("C-x g" . magit-status))
+(use-package magit
+  :bind ("C-x g" . magit-status))
 
-  (use-package forge
-    :after magit)
+(use-package forge
+  :after magit)
 
-  (require 'magit-git)
+(require 'magit-git)
 
-  (defun my/magit-check-file-and-popup ()
-    "If the file is version controlled with git
+(defun my/magit-check-file-and-popup ()
+  "If the file is version controlled with git
     and has uncommitted changes, open the magit status popup."
-    (let ((file (buffer-file-name)))
-      (when (and file (magit-anything-modified-p t file))
-        (message "This file has uncommited changes!")
-        (when nil) ;; Became annyoying after some time.
-        (split-window-below)
-        (other-window 1)
-        (magit-status))))
+  (let ((file (buffer-file-name)))
+    (when (and file (magit-anything-modified-p t file))
+      (message "This file has uncommited changes!")
+      (when nil) ;; Became annyoying after some time.
+      (split-window-below)
+      (other-window 1)
+      (magit-status))))
 
-  ;; I usually have local variables, so I want the message to show
-  ;; after the locals have been loaded.
-  (add-hook 'find-file-hook
-            '(lambda ()
-               (add-hook 'hack-local-variables-hook 'my/magit-check-file-and-popup)))
+;; I usually have local variables, so I want the message to show
+;; after the locals have been loaded.
+(add-hook 'find-file-hook
+          '(lambda ()
+             (add-hook 'hack-local-variables-hook 'my/magit-check-file-and-popup)))
 
-  ;; Emacs package for highlighting uncommitted changes
-  (use-package diff-hl
-    :custom-face
-    (diff-hl-insert ((t (:foreground "#55bb55" :background nil))))
-    (diff-hl-delete ((t (:foreground "#ff6666" :background nil))))
-    (diff-hl-change ((t (:foreground "#99bbdd" :background nil))))
-    :config
-    (global-diff-hl-mode +1)
-    (diff-hl-flydiff-mode +1)
-    (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh t))
+;; Emacs package for highlighting uncommitted changes
+(use-package diff-hl
+  :custom-face
+  (diff-hl-insert ((t (:foreground "#55bb55" :background nil))))
+  (diff-hl-delete ((t (:foreground "#ff6666" :background nil))))
+  (diff-hl-change ((t (:foreground "#99bbdd" :background nil))))
+  :config
+  (global-diff-hl-mode +1)
+  (diff-hl-flydiff-mode +1)
+  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh t))
 #+END_SRC
 *** git-gutter and git-timemachine
     git-gutter: Shows modified lines.  https://github.com/syohex/emacs-git-gutter
     git-timemachine: Go through git history in a file.  https://github.com/emacsmirror/git-timemachine
 #+BEGIN_SRC emacs-lisp
-  (use-package git-gutter
-    :config
-    (global-git-gutter-mode t)
-    (setq git-gutter:modified-sign "|")
-    (set-face-foreground 'git-gutter:modified "grey")
-    (set-face-foreground 'git-gutter:added "green")
-    (set-face-foreground 'git-gutter:deleted "red")
-    :bind (("C-x C-g" . git-gutter))
-    :diminish nil)
+(use-package git-gutter
+  :config
+  (global-git-gutter-mode t)
+  (setq git-gutter:modified-sign "|")
+  (set-face-foreground 'git-gutter:modified "grey")
+  (set-face-foreground 'git-gutter:added "green")
+  (set-face-foreground 'git-gutter:deleted "red")
+  :bind (("C-x C-g" . git-gutter))
+  :diminish nil)
 
-  (use-package git-timemachine)
+(use-package git-timemachine)
 #+END_SRC
 *** cmake-mode
 #+BEGIN_SRC emacs-lisp
-  (use-package cmake-mode
-    :mode "CMakeLists\\.txt\\'")
+(use-package cmake-mode
+  :mode "CMakeLists\\.txt\\'")
 #+END_SRC
 *** yaml-mode
 #+BEGIN_SRC emacs-lisp
-  (use-package yaml-mode
-    :mode "\\.ya?ml$")
+(use-package yaml-mode
+  :mode "\\.ya?ml$")
 #+END_SRC
 *** elisp-format - EMACS Lisp files
 ##+BEGIN_SRC emacs-lisp
@@ -905,254 +924,236 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 
 auto switch to Indent Mode whenever parens are balance in Paren Mode
 #+BEGIN_SRC emacs-lisp
-  (use-package parinfer
-    :ensure
-    :bind
-    ("C-," . parinfer-toggle-mode)
-    :init
-    (progn
-      (setq parinfer-extensions
-            '(defaults       ; should be included.
-               paredit        ; Introduce some paredit commands.
-               smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
-               smart-yank))   ; Yank behavior depend on mode.
-      (add-hook 'clojure-mode-hook #'parinfer-mode)
-      (add-hook 'emacs-lisp-mode-hook #'parinfer-mode)
-      (add-hook 'common-lisp-mode-hook #'parinfer-mode)
-      (add-hook 'scheme-mode-hook #'parinfer-mode)
-      (add-hook 'lisp-mode-hook #'parinfer-mode)))
+(use-package parinfer
+  :ensure
+  :bind
+  ("C-," . parinfer-toggle-mode)
+  :init
+  (progn
+    (setq parinfer-extensions
+          '(defaults       ; should be included.
+             paredit        ; Introduce some paredit commands.
+             smart-tab      ; C-b & C-f jump positions and smart shift with tab & S-tab.
+             smart-yank))   ; Yank behavior depend on mode.
+    (add-hook 'clojure-mode-hook #'parinfer-mode)
+    (add-hook 'emacs-lisp-mode-hook #'parinfer-mode)
+    (add-hook 'common-lisp-mode-hook #'parinfer-mode)
+    (add-hook 'scheme-mode-hook #'parinfer-mode)
+    (add-hook 'lisp-mode-hook #'parinfer-mode)))
 
-  (use-package paredit
-    :bind ("M-^" . paredit-delete-indentation)
-    :bind ("C-^" . paredit-remove-newlines)
-    :init
-    (add-hook 'clojure-mode-hook 'paredit-mode)
-    (add-hook 'emacs-lisp-mode-hook       'paredit-mode)
-    (add-hook 'eval-expression-minibuffer-setup-hook 'paredit-mode)
-    (add-hook 'ielm-mode-hook             'paredit-mode)
-    (add-hook 'lisp-mode-hook             'paredit-mode)
-    (add-hook 'lisp-interaction-mode-hook 'paredit-mode)
-    (add-hook 'scheme-mode-hook           'paredit-mode))
+(use-package paredit
+  :bind ("M-^" . paredit-delete-indentation)
+  :bind ("C-^" . paredit-remove-newlines)
+  :init
+  (add-hook 'clojure-mode-hook 'paredit-mode)
+  (add-hook 'emacs-lisp-mode-hook       'paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook 'paredit-mode)
+  (add-hook 'ielm-mode-hook             'paredit-mode)
+  (add-hook 'lisp-mode-hook             'paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook 'paredit-mode)
+  (add-hook 'scheme-mode-hook           'paredit-mode))
 #+END_SRC
 *** SLIME - superior Lisp Interaction Mode for Emacs
     https://github.com/slime/slime
 #+BEGIN_SRC emacs-lisp
-  (use-package slime
-    :init
-    ;; Set your lisp system and, optionally, some contribs
-    (setq inferior-lisp-program "/usr/bin/sbcl")
-    (setq slime-contribs '(slime-fancy)))
+(use-package slime
+  :init
+  ;; Set your lisp system and, optionally, some contribs
+  (setq
+   inferior-lisp-program "/usr/bin/sbcl"
+   slime-contribs '(slime-fancy)))
 #+END_SRC
 *** docker
 #+BEGIN_SRC emacs-lisp
-  (use-package docker
-    :commands docker-mode
-    :bind ("C-c d" . docker))
+(use-package docker
+  :commands docker-mode
+  :bind ("C-c d" . docker))
 
-  (use-package dockerfile-mode
-    :mode "Dockerfile.*\\'")
+(use-package dockerfile-mode
+  :mode "Dockerfile.*\\'")
 #+END_SRC
 *** Prolog
 #+BEGIN_SRC emacs-lisp
-  (use-package prolog
-      :load-path "~/code/emacs/prolog"
-      :mode ("\\.pl\\'" . prolog-mode)
-      :config
-      (setq-default prolog-system 'swi)
-      (setq prolog-system 'swi))
+(use-package prolog
+  :load-path "~/code/emacs/prolog"
+  :mode ("\\.pl\\'" . prolog-mode)
+  :config
+  (setq-default prolog-system 'swi)
+  (setq prolog-system 'swi))
 #+END_SRC
 *** Python packages
     elpy - Emacs Python Development Environment (https://github.com/jorgenschaefer/elpy)
     jedi - Python auto-completion for Emacs (https://github.com/tkf/emacs-jedi)
 #+BEGIN_SRC emacs-lisp
-  (use-package jedi
-    :init
-    (add-hook 'python-mode-hook 'jedi:setup)
-    (add-hook 'python-mode-hook 'jedi:ac-setup))
+(use-package jedi
+  :init
+  (add-hook 'python-mode-hook 'jedi:setup)
+  (add-hook 'python-mode-hook 'jedi:ac-setup))
 
-  (use-package elpy
-    :defer 2
-    :config
-    ;; Use Flycheck instead of Flymake
-    (when (require 'flycheck nil t)
-      (remove-hook 'elpy-modules 'elpy-module-flymake)
-      (remove-hook 'elpy-modules 'elpy-module-yasnippet)
-      (remove-hook 'elpy-mode-hook 'elpy-module-highlight-indentation)
-      (add-hook 'elpy-mode-hook 'flycheck-mode))
-    (elpy-enable)
-    (setq elpy-rpc-backend "jedi")
-    (unless (string-equal system-type "usg-unix-v") ; UNIX System V (OpenIndiana) doesn't have Jupyter
-      (progn
-        (setq python-shell-interpreter "jupyter"
-              python-shell-interpreter-args "console --simple-prompt"
-              python-shell-prompt-detect-failure-warning nil)
-        (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter"))))
+(use-package elpy
+  :defer 2
+  :config
+  ;; Use Flycheck instead of Flymake
+  (when (require 'flycheck nil t)
+    (remove-hook 'elpy-modules 'elpy-module-flymake)
+    (remove-hook 'elpy-modules 'elpy-module-yasnippet)
+    (remove-hook 'elpy-mode-hook 'elpy-module-highlight-indentation)
+    (add-hook 'elpy-mode-hook 'flycheck-mode))
+  (elpy-enable)
+  (setq elpy-rpc-backend "jedi")
+  (unless (string-equal system-type "usg-unix-v") ; UNIX System V (OpenIndiana) doesn't have Jupyter
+    (progn
+      (setq python-shell-interpreter "jupyter"
+            python-shell-interpreter-args "console --simple-prompt"
+            python-shell-prompt-detect-failure-warning nil)
+      (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter"))))
 
-  (use-package py-autopep8
-    :init (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
+(use-package py-autopep8
+  :init (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
 
-  (use-package yasnippet
-    :init (yas-global-mode 1))
-  (use-package yasnippet-snippets)
+(use-package yasnippet
+  :init (yas-global-mode 1))
+
+(use-package yasnippet-snippets)
 #+END_SRC
 *** LSP
 #+BEGIN_SRC emacs-lisp
-  (use-package company-lsp
-    :config
-    (push 'company-lsp company-backends))
+(use-package company-lsp
+  :config
+  (push 'company-lsp company-backends))
 
-  (use-package lsp-mode
-    :commands (lsp lsp-register-custom-settings)
-    ;; reformat code and add missing (or remove old) imports
-    :hook ((before-save . lsp-format-buffer)
-           (before-save . lsp-organize-imports))
-    :bind (("C-c d" . lsp-describe-thing-at-point)
-           ("C-c e n" . flymake-goto-next-error)
-           ("C-c e p" . flymake-goto-prev-error)
-           ("C-c e r" . lsp-find-references)
-           ("C-c e R" . lsp-rename)
-           ("C-c e i" . lsp-find-implementation)
-           ("C-c e t" . lsp-find-type-definition)))
-
-  ;; (use-package lsp-mode
-  ;;   :hook ((c-mode         ; clangd
-  ;;           c-or-c++-mode  ; clangd
-  ;;           java-mode      ; eclipse-jdtls
-  ;;           js-mode        ; typescript-language-server
-  ;;           python-mode    ; pyls
-  ;;           dart-mode      ; dart analysis server
-  ;;           ) . lsp)
-  ;;   :commands lsp
-  ;;   :config
-  ;;   (setq lsp-prefer-flymake nil)
-  ;;   (setq lsp-enable-symbol-highlighting nil)
-  ;;   (setq lsp-signature-auto-activate nil))
-
-  ;; (use-package lsp-java
-  ;;   :after lsp)
-
-  ;; (use-package company-lsp
-  ;;   :commands company-lsp
-  ;;   :config (setq company-lsp-cache-candidates 'auto))
+(use-package lsp-mode
+  :commands (lsp lsp-register-custom-settings)
+  ;; reformat code and add missing (or remove old) imports
+  :hook ((before-save . lsp-format-buffer)
+         (before-save . lsp-organize-imports))
+  :bind (("C-c d" . lsp-describe-thing-at-point)
+         ("C-c e n" . flymake-goto-next-error)
+         ("C-c e p" . flymake-goto-prev-error)
+         ("C-c e r" . lsp-find-references)
+         ("C-c e R" . lsp-rename)
+         ("C-c e i" . lsp-find-implementation)
+         ("C-c e t" . lsp-find-type-definition)))
 #+END_SRC
 * Web
 #+BEGIN_SRC emacs-lisp
-  (use-package web-mode
-    :mode "\\.phtml\\'"
-    :mode "\\.volt\\'"
-    :mode "\\.html\\'"
-    :mode "\\.tsx$\\'"
-    :init
-    (add-hook 'web-mode-hook 'variable-pitch-mode)
-    (add-hook 'web-mode-hook 'company-mode)
-    (add-hook 'web-mode-hook 'prettier-js-mode)
-    (add-hook 'web-mode-hook (lambda () (pcase (file-name-extension buffer-file-name)
-                        ("tsx" (my-tide-setup-hook))
-                        (_ (my-web-mode-hook))))))
+(use-package web-mode
+  :mode "\\.phtml\\'"
+  :mode "\\.volt\\'"
+  :mode "\\.html\\'"
+  :mode "\\.tsx$\\'"
+  :init
+  (add-hook 'web-mode-hook 'variable-pitch-mode)
+  (add-hook 'web-mode-hook 'company-mode)
+  (add-hook 'web-mode-hook 'prettier-js-mode)
+  (add-hook 'web-mode-hook (lambda () (pcase (file-name-extension buffer-file-name)
+                                        ("tsx" (my-tide-setup-hook))
+                                        (_ (my-web-mode-hook))))))
 
-  (use-package css-mode
-    :init
-    (add-to-list 'auto-mode-alist '("\\.scss$" . css-mode))
-    (add-to-list 'auto-mode-alist '("\\.sass$" . css-mode))
-    (setq css-indent-offset 2))
+(use-package css-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.scss$" . css-mode))
+  (add-to-list 'auto-mode-alist '("\\.sass$" . css-mode))
+  (setq css-indent-offset 2))
 
-  ;; Emmet is super cool, and emmet-mode brings support to Emacs.
-  (use-package emmet-mode
-    :commands (emmet-expand-line emmet-expand)
-    :defer 2
-    :init
-    (add-hook 'sgml-mode-hook 'emmet-mode)
-    (add-hook 'web-mode-hook 'emmet-mode)
-    (add-hook 'css-mode-hook  'emmet-mode)
-    :config
-    (bind-key "C-j" 'emmet-expand-line emmet-mode-keymap)
-    (bind-key "<C-return>" 'emmet-expand emmet-mode-keymap)
-    (setq emmet-indentation 2)
-    (defadvice emmet-preview-accept (after expand-and-fontify activate)
-      "Update the font-face after an emmet expantion."
-      (font-lock-fontify-buffer)))
+;; Emmet is super cool, and emmet-mode brings support to Emacs.
+(use-package emmet-mode
+  :commands (emmet-expand-line emmet-expand)
+  :defer 2
+  :init
+  (add-hook 'sgml-mode-hook 'emmet-mode)
+  (add-hook 'web-mode-hook 'emmet-mode)
+  (add-hook 'css-mode-hook  'emmet-mode)
+  :config
+  (bind-key "C-j" 'emmet-expand-line emmet-mode-keymap)
+  (bind-key "<C-return>" 'emmet-expand emmet-mode-keymap)
+  (setq emmet-indentation 2)
+  (defadvice emmet-preview-accept (after expand-and-fontify activate)
+    "Update the font-face after an emmet expantion."
+    (font-lock-fontify-buffer)))
 
-  (use-package nginx-mode
-    :mode "\\.nginx\\'")
+(use-package nginx-mode
+  :mode "\\.nginx\\'")
 #+END_SRC
 * JavaScript
   For indium (https://github.com/NicolasPetton/Indium) remember to install the indium server:
   sudo npm install -g indium
 #+BEGIN_SRC emacs-lisp
-  (use-package js2-mode
-    :mode ("\\.js\\'")
-    :interpreter "node")
+(use-package js2-mode
+  :mode ("\\.js\\'")
+  :interpreter "node")
 
-  (use-package angular-mode
-    :config (setq js-indent-level 4))
+(use-package angular-mode
+  :config (setq js-indent-level 4))
 
-  (defun eslint-fix-file ()
-    (interactive)
-    (add-node-modules-path)
-    (message (concat "eslint --fix " (buffer-file-name)))
-    (call-process "eslint" nil 0 nil "--fix" (buffer-file-name))
-    (revert-buffer t t))
+(defun eslint-fix-file ()
+  (interactive)
+  (add-node-modules-path)
+  (message (concat "eslint --fix " (buffer-file-name)))
+  (call-process "eslint" nil 0 nil "--fix" (buffer-file-name))
+  (revert-buffer t t))
 
-  (defun my-web-mode-hook ())
-  (defun my-tide-setup-hook ()
-    (tide-setup)
-    (eldoc-mode)
-    (tide-hl-identifier-mode +1)
+(defun my-web-mode-hook ())
+(defun my-tide-setup-hook ()
+  (tide-setup)
+  (eldoc-mode)
+  (tide-hl-identifier-mode +1)
 
-    (setq web-mode-enable-auto-quoting nil)
-    (setq web-mode-markup-indent-offset 4)
-    (setq web-mode-code-indent-offset 4)
-    (setq web-mode-attr-indent-offset 4)
-    (setq web-mode-attr-value-indent-offset 4)
-    (set (make-local-variable 'company-backends)
-          '((company-tide company-files :with company-yasnippet)
-            (company-dabbrev-code company-dabbrev)))
-    (flycheck-add-mode 'typescript-tslint 'web-mode)
-    (general-define-key
-      :states 'normal
-      :keymaps 'local
-      :prefix ", ."
-      "f" 'tide-fix
-      "i" 'tide-organize-imports
-      "u" 'tide-references
-      "R" 'tide-restart-server
-      "d" 'tide-documentation-at-point
-      "F" 'tide-format
+  (setq web-mode-enable-auto-quoting nil)
+  (setq web-mode-markup-indent-offset 4)
+  (setq web-mode-code-indent-offset 4)
+  (setq web-mode-attr-indent-offset 4)
+  (setq web-mode-attr-value-indent-offset 4)
+  (set (make-local-variable 'company-backends)
+       '((company-tide company-files :with company-yasnippet)
+         (company-dabbrev-code company-dabbrev)))
+  (flycheck-add-mode 'typescript-tslint 'web-mode)
+  (general-define-key
+   :states 'normal
+   :keymaps 'local
+   :prefix ", ."
+   "f" 'tide-fix
+   "i" 'tide-organize-imports
+   "u" 'tide-references
+   "R" 'tide-restart-server
+   "d" 'tide-documentation-at-point
+   "F" 'tide-format
+   
+   "e s" 'tide-error-at-point
+   "e l" 'tide-project-errors
+   "e i" 'tide-add-tslint-disable-next-line
+   "e n" 'tide-find-next-error
+   "e p" 'tide-find-previous-error
+   
+   "r r" 'tide-rename-symbol
+   "r F" 'tide-refactor
+   "r f" 'tide-rename-file)
+  (general-define-key
+   :states 'normal
+   :keymaps 'local
+   :prefix "g"
+   :override t
 
-      "e s" 'tide-error-at-point
-      "e l" 'tide-project-errors
-      "e i" 'tide-add-tslint-disable-next-line
-      "e n" 'tide-find-next-error
-      "e p" 'tide-find-previous-error
+   "d" 'tide-jump-to-definition
+   "D" 'tide-jump-to-implementation
+   "b" 'tide-jump-back))
 
-      "r r" 'tide-rename-symbol
-      "r F" 'tide-refactor
-      "r f" 'tide-rename-file)
-    (general-define-key
-      :states 'normal
-      :keymaps 'local
-      :prefix "g"
-      :override t
+(use-package prettier-js
+  :defer t)
 
-      "d" 'tide-jump-to-definition
-      "D" 'tide-jump-to-implementation
-      "b" 'tide-jump-back))
+(use-package tide
+  :defer t)
 
-  (use-package prettier-js
-    :defer t)
-  (use-package tide
-    :defer t)
+(use-package typescript-mode
+  :mode (("\\.ts$" . typescript-mode))
+  :init
+  (add-hook 'typescript-mode-hook 'my-tide-setup-hook)
+  (add-hook 'typescript-mode-hook 'company-mode)
+  (add-hook 'typescript-mode-hook 'prettier-js-mode))
 
-  (use-package typescript-mode
-    :mode (("\\.ts$" . typescript-mode))
-    :init
-    (add-hook 'typescript-mode-hook 'my-tide-setup-hook)
-    (add-hook 'typescript-mode-hook 'company-mode)
-    (add-hook 'typescript-mode-hook 'prettier-js-mode))
+(setq-default typescript-indent-level 4)
 
-  (setq-default typescript-indent-level 4)
-
-  (use-package indium)
+(use-package indium)
 #+END_SRC
 * mu4e
 ##+BEGIN_SRC emacs-lisp
@@ -1238,102 +1239,102 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
 ##+END_SRC
 * org - markdown on steroids
 #+BEGIN_SRC emacs-lisp
-  (use-package org
-    :mode ("\\.org\\'" . org-mode)
-    :bind
-    ("C-c l" . org-store-link)
-    ("C-c a" . org-agenda)
-    ("C-c c" . org-capture)
-    ("C-c b" . org-switchb)
-    :config
-    (setq
-     org-directory "~/org"
-     org-support-shift-select t
-     org-plantuml-jar-path (expand-file-name "~/bin/plantuml.jar")
-     ;; Replace the content marker, “⋯”, with a nice unicode arrow.
-     org-ellipsis " ⤵"
-     ;; Fold all source blocks on startup.
-     org-hide-block-startup t
-     ;; Lists may be labelled with letters.
-     org-list-allow-alphabetical t
-     ;; Avoid accidentally editing folded regions, say by adding text after an Org “⋯”.
-     org-catch-invisible-edits 'show
-     ;; I use indentation-sensitive programming languages.
-     ;; Tangling should preserve my indentation.
-     org-src-preserve-indentation t
-     ;; Tab should do indent in code blocks
-     org-src-tab-acts-natively t
-     ;; Give quote and verse blocks a nice look.
-     org-fontify-quote-and-verse-blocks t
-     ;; Pressing ENTER on a link should follow it.
-     org-return-follows-link t))
+(use-package org
+  :mode ("\\.org\\'" . org-mode)
+  :bind
+  ("C-c l" . org-store-link)
+  ("C-c a" . org-agenda)
+  ("C-c c" . org-capture)
+  ("C-c b" . org-switchb)
+  :config
+  (setq
+   org-directory "~/org"
+   org-support-shift-select t
+   org-plantuml-jar-path (expand-file-name "~/bin/plantuml.jar")
+   ;; Replace the content marker, “⋯”, with a nice unicode arrow.
+   org-ellipsis " ⤵"
+   ;; Fold all source blocks on startup.
+   org-hide-block-startup t
+   ;; Lists may be labelled with letters.
+   org-list-allow-alphabetical t
+   ;; Avoid accidentally editing folded regions, say by adding text after an Org “⋯”.
+   org-catch-invisible-edits 'show
+   ;; I use indentation-sensitive programming languages.
+   ;; Tangling should preserve my indentation.
+   org-src-preserve-indentation t
+   ;; Tab should do indent in code blocks
+   org-src-tab-acts-natively t
+   ;; Give quote and verse blocks a nice look.
+   org-fontify-quote-and-verse-blocks t
+   ;; Pressing ENTER on a link should follow it.
+   org-return-follows-link t))
 
-  (eval-after-load "org"
-    '(require 'ox-md nil t))  ;; Provide markdown export
+(eval-after-load "org"
+  '(require 'ox-md nil t))  ;; Provide markdown export
 
-  (use-package org-bullets
-    :commands (org-bullets-mode)
-    :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+(use-package org-bullets
+  :commands (org-bullets-mode)
+  :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
-  (use-package ob-typescript)
+(use-package ob-typescript)
 
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '(
-     (C .  t)  ;; Capital C gives access to C, C++, D
-     (dot . t)
-     (emacs-lisp . t)
-     (latex . t)
-     (makefile . t)
-     (ocaml . t)
-     (org . t)
-     (plantuml . t)
-     (python . t)
-     (ruby . t)
-     (shell . t)
-     (typescript . t)))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(
+   (C .  t)  ;; Capital C gives access to C, C++, D
+   (dot . t)
+   (emacs-lisp . t)
+   (latex . t)
+   (makefile . t)
+   (ocaml . t)
+   (org . t)
+   (plantuml . t)
+   (python . t)
+   (ruby . t)
+   (shell . t)
+   (typescript . t)))
 
-  (use-package org-ql)
+(use-package org-ql)
 
-  (use-package htmlize)
+(use-package htmlize)
 #+END_SRC
 * PDF Tools
 #+BEGIN_SRC emacs-lisp
-  (use-package pdf-tools
-    :magic ("%PDF" . pdf-view-mode)
-    :config
-    (pdf-tools-install)
-    ;; open pdfs scaled to fit page
-    (setq-default pdf-view-display-size 'fit-page)
-    ;; automatically annotate highlights
-    (setq pdf-annot-activate-created-annotations t)
-    ;; turn off cua so copy works
-    (add-hook 'pdf-view-mode-hook (lambda () (cua-mode 0)))
-    ;; more fine-grained zooming
-    (setq pdf-view-resize-factor 1.1)
+(use-package pdf-tools
+  :magic ("%PDF" . pdf-view-mode)
+  :config
+  (pdf-tools-install)
+  ;; open pdfs scaled to fit page
+  (setq-default pdf-view-display-size 'fit-page)
+  ;; automatically annotate highlights
+  (setq pdf-annot-activate-created-annotations t)
+  ;; turn off cua so copy works
+  (add-hook 'pdf-view-mode-hook (lambda () (cua-mode 0)))
+  ;; more fine-grained zooming
+  (setq pdf-view-resize-factor 1.1)
     ;; keyboard shortcuts
-    (define-key pdf-view-mode-map (kbd "h") 'pdf-annot-add-highlight-markup-annotation)
-    (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
-    (define-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete)
-    (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward))    ;; use normal isearch
+  (define-key pdf-view-mode-map (kbd "h") 'pdf-annot-add-highlight-markup-annotation)
+  (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
+  (define-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete)
+  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward))    ;; use normal isearch
 #+END_SRC
 * LaTeX
 #+BEGIN_SRC emacs-lisp
-  (use-package tex-site
-    :ensure auctex
-    :mode ("\\.tex\\'" . latex-mode)
-    :config
-    (setq-default TeX-master nil)
-    (add-hook 'LaTeX-mode-hook
-              (lambda ()
-                (rainbow-delimiters-mode)
-                (company-mode)
-                (smartparens-mode)
-                (turn-on-reftex)))
-    ;; Update PDF buffers after successful LaTeX runs
-    (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook #'TeX-revert-document-buffer)
-    ;; to use pdfview with auctex
-    (add-hook 'LaTeX-mode-hook 'pdf-tools-install))
+(use-package tex-site
+  :ensure auctex
+  :mode ("\\.tex\\'" . latex-mode)
+  :config
+  (setq-default TeX-master nil)
+  (add-hook 'LaTeX-mode-hook
+            (lambda ()
+              (rainbow-delimiters-mode)
+              (company-mode)
+              (smartparens-mode)
+              (turn-on-reftex)))
+  ;; Update PDF buffers after successful LaTeX runs
+  (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook #'TeX-revert-document-buffer)
+  ;; to use pdfview with auctex
+  (add-hook 'LaTeX-mode-hook 'pdf-tools-install))
 #+END_SRC
 * OS dependent settings and packages
   https://github.com/Alexander-Miller/treemacs
@@ -1482,49 +1483,49 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
 #+END_SRC
 * Holidays
 #+BEGIN_SRC emacs-lisp
-  (setq holiday-general-holidays
-        '((holiday-fixed 1 1 "Neujahr")
-          (holiday-fixed 5 1 "Tag der Arbeit")
-          (holiday-fixed 10 3 "Tag der deutschen Einheit")))
-  (setq holiday-christian-holidays
-        '((holiday-fixed 12 25 "1. Weihnachtstag")
-          (holiday-fixed 12 26 "2. Weihnachtstag")
-          (holiday-fixed 1 6 "Heilige 3 Könige")
-          (holiday-fixed 10 31 "Reformationstag")
-          (holiday-fixed 11 1 "Allerheiligen")
-          ;; Date of Easter calculation taken from holidays.el.
-          (let* ((century (1+ (/ displayed-year 100)))
-                 (shifted-epact (% (+ 14 (* 11 (% displayed-year 19))
-                                      (- (/ (* 3 century) 4))
-                                      (/ (+ 5 (* 8 century)) 25)
-                                      (* 30 century))
-                                   30))
-                 (adjusted-epact (if (or (= shifted-epact 0)
-                                         (and (= shifted-epact 1)
-                                              (< 10 (% displayed-year 19))))
-                                     (1+ shifted-epact)
-                                   shifted-epact))
-                 (paschal-moon (- (calendar-absolute-from-gregorian
-                                   (list 4 19 displayed-year))
-                                  adjusted-epact))
-                 (easter (calendar-dayname-on-or-before 0 (+ paschal-moon 7))))
-            (holiday-filter-visible-calendar
-             (mapcar
-              (lambda (l)
-                (list (calendar-gregorian-from-absolute (+ easter (car l)))
-                      (nth 1 l)))
-              '(( -2 "Karfreitag")
-                (  0 "Ostersonntag")
-                ( +1 "Ostermontag")
-                (+39 "Christi Himmelfahrt")
-                (+49 "Pfingstsonntag")
-                (+50 "Pfingstmontag")
-                (+60 "Fronleichnam")))))))
-  (setq calendar-holidays (append holiday-general-holidays holiday-christian-holidays))
+(setq holiday-general-holidays
+      '((holiday-fixed 1 1 "Neujahr")
+        (holiday-fixed 5 1 "Tag der Arbeit")
+        (holiday-fixed 10 3 "Tag der deutschen Einheit")))
+(setq holiday-christian-holidays
+      '((holiday-fixed 12 25 "1. Weihnachtstag")
+        (holiday-fixed 12 26 "2. Weihnachtstag")
+        (holiday-fixed 1 6 "Heilige 3 Könige")
+        (holiday-fixed 10 31 "Reformationstag")
+        (holiday-fixed 11 1 "Allerheiligen")
+        ;; Date of Easter calculation taken from holidays.el.
+        (let* ((century (1+ (/ displayed-year 100)))
+               (shifted-epact (% (+ 14 (* 11 (% displayed-year 19))
+                                    (- (/ (* 3 century) 4))
+                                    (/ (+ 5 (* 8 century)) 25)
+                                    (* 30 century))
+                                 30))
+               (adjusted-epact (if (or (= shifted-epact 0)
+                                       (and (= shifted-epact 1)
+                                            (< 10 (% displayed-year 19))))
+                                   (1+ shifted-epact)
+                                 shifted-epact))
+               (paschal-moon (- (calendar-absolute-from-gregorian
+                                 (list 4 19 displayed-year))
+                                adjusted-epact))
+               (easter (calendar-dayname-on-or-before 0 (+ paschal-moon 7))))
+          (holiday-filter-visible-calendar
+           (mapcar
+            (lambda (l)
+              (list (calendar-gregorian-from-absolute (+ easter (car l)))
+                    (nth 1 l)))
+            '(( -2 "Karfreitag")
+              (  0 "Ostersonntag")
+              ( +1 "Ostermontag")
+              (+39 "Christi Himmelfahrt")
+              (+49 "Pfingstsonntag")
+              (+50 "Pfingstmontag")
+              (+60 "Fronleichnam")))))))
+(setq calendar-holidays (append holiday-general-holidays holiday-christian-holidays))
 #+END_SRC
 * Server
 #+BEGIN_SRC emacs-lisp
-  (use-package server
-    :config
-    (unless (server-running-p) (server-start)))
+(use-package server
+  :config
+  (unless (server-running-p) (server-start)))
 #+END_SRC
