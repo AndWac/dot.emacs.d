@@ -30,8 +30,9 @@
   :config
   (setq
    auto-package-update-delete-old-versions t  ;; Delete residual old versions
-   auto-package-update-hide-results t)        ;; Do not bother me when updates have taken place.
-  (auto-package-update-maybe))                ;; Update installed packages at startup if there is an update pending.
+   auto-package-update-interval 3             ;; Check every 3 days for updates
+   auto-package-update-hide-results t)        ;; Do not bother me when updates have taken place
+  (auto-package-update-maybe))                ;; Update installed packages at startup if there is an update pending
 
 (use-package diminish
   :demand t
