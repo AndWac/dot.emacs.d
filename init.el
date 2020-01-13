@@ -4,15 +4,11 @@
     (add-to-list 'gnutls-trustfiles "/etc/certs/ca-certificates.crt"))
 
 (require 'package)
-
 (setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-             '("org" . "https://orgmode.org/elpa/"))
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-(setq package-archive-priorities '(("org" . 3)
-                                   ("melpa" . 2)
-                                   ("gnu" . 1)))
+(setq package-archives '(
+                         ("org"       . "https://orgmode.org/elpa/")
+                         ("melpa"     . "https://melpa.org/packages/")
+                         ("gnu"       . "http://elpa.gnu.org/packages/")))
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
