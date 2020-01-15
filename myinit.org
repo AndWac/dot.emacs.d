@@ -83,8 +83,8 @@
  cursor-type 'box
  ;; Sentences do not need double spaces to end.
  sentence-end-double-space nil)
- 
-(setq 
+
+(setq
  ;; Productive default mode
  initial-major-mode 'org-mode
  ;; Fix empty pasteboard error
@@ -431,27 +431,36 @@ I prefer electric-pair-mode over smartparens:
 *** doom-themes
 ##+BEGIN_SRC emacs-lisp
 (use-package doom-themes
-  :config
-  (load-theme 'doom-vibrant t))
-##+END_SRC
-*** spacemacs-theme
-##+BEGIN_SRC emacs-lisp
-(use-package ewal-spacemacs-themes
-  :config
-  (setq spacemacs-theme-comment-bg nil
-        spacemacs-theme-comment-italic t)
-  (load-theme 'spacemacs-dark t))
+  :config  (load-theme 'doom-gruvbox t))
 ##+END_SRC
 *** Solarized
-#+BEGIN_SRC emacs-lisp
+##+BEGIN_SRC emacs-lisp
 (use-package solarized-theme
   :config (load-theme 'solarized-dark t))
 #+END_SRC
-*** Gruvbox
-    https://github.com/greduan/emacs-theme-gruvbox
+*** VSC Dark Theme+
+    I have patched the origin vscdark theme to make the cursor more visible (bg3 -> fg3):
 ##+BEGIN_SRC emacs-lisp
-(use-package gruvbox-theme
-  :config (load-theme 'gruvbox-dark-hard t))
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(load-theme 'vscdark t)
+##+END_SRC
+##+BEGIN_SRC emacs-lisp
+(use-package vscdark-theme
+  :config (load-theme 'vscdark t))
+##+END_SRC
+*** VSCode Dark
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+;; or
+;;(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
+(load-theme 'vscode-dark t)
+#+END_SRC
+*** VSCode Dark+
+##+BEGIN_SRC emacs-lisp
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+;; or
+;;(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
+(load-theme 'vscode-dark-plus t)
 ##+END_SRC
 * General
 *** uniquify
@@ -640,7 +649,7 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
      ("j" switch-to-buffer-other-frame "other frame")
      ("k" kill-buffer "kill")
      ("r" ivy--rename-buffer-action "rename")))
-  
+
   (ivy-set-actions
    'counsel-git-grep
    '(
@@ -655,15 +664,15 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 (use-package ivy-xref
   :init (setq xref-show-xrefs-function #'ivy-xref-show-xrefs))
 
-(use-package ivy-posframe
-  :after ivy
-  :diminish
-  :config
-  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
-        ivy-posframe-height-alist '((t . 20))
-        ivy-posframe-parameters '((internal-border-width . 10)))
-  (setq ivy-posframe-width 70)
-  (ivy-posframe-mode +1))
+;; (use-package ivy-posframe
+;;   :after ivy
+;;   :diminish
+;;   :config
+;;   (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center))
+;;         ivy-posframe-height-alist '((t . 20))
+;;         ivy-posframe-parameters '((internal-border-width . 10)))
+;;   (setq ivy-posframe-width 70)
+;;   (ivy-posframe-mode +1))
 
 (use-package ivy-rich
   :preface
@@ -915,6 +924,20 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 
 (use-package git-timemachine)
 #+END_SRC
+*** JavaScript
+    For indium remember to install the npm package: npm install -g indium
+    https://github.com/NicolasPetton/Indium
+    https://indium.readthedocs.io/en/latest/index.html
+#+BEGIN_SRC emacs-lisp
+(use-package js2-mode
+  :mode ("\\.js\\'")
+  :interpreter "node")
+
+(use-package prettier-js
+  :defer t)
+
+(use-package indium)
+#+END_SRC
 *** cmake-mode
 #+BEGIN_SRC emacs-lisp
 (use-package cmake-mode
@@ -1039,22 +1062,21 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
 #+END_SRC
 *** LSP
 #+BEGIN_SRC emacs-lisp
-(use-package company-lsp
-  :config
-  (push 'company-lsp company-backends))
-
 (use-package lsp-mode
-  :commands (lsp lsp-register-custom-settings)
-  ;; reformat code and add missing (or remove old) imports
-  :hook ((before-save . lsp-format-buffer)
-         (before-save . lsp-organize-imports))
-  :bind (("C-c d" . lsp-describe-thing-at-point)
+  :commands (lsp lsp-deferred)
+  :hook (prog-mode-hook . lsp-deferred)
+  :bind (("C-c d"   . lsp-describe-thing-at-point)
          ("C-c e n" . flymake-goto-next-error)
          ("C-c e p" . flymake-goto-prev-error)
          ("C-c e r" . lsp-find-references)
          ("C-c e R" . lsp-rename)
          ("C-c e i" . lsp-find-implementation)
          ("C-c e t" . lsp-find-type-definition)))
+
+(use-package lsp-ui :commands lsp-ui-mode)
+(use-package company-lsp :commands company-lsp)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+(use-package dap-mode)  ;; Debugger support
 #+END_SRC
 * Web
 #+BEGIN_SRC emacs-lisp
@@ -1092,20 +1114,6 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
 
 (use-package nginx-mode
   :mode "\\.nginx\\'")
-#+END_SRC
-* JavaScript
-  For indium (https://github.com/NicolasPetton/Indium) remember to install the indium server:
-  sudo npm install -g indium
-
-#+BEGIN_SRC emacs-lisp
-(use-package js2-mode
-  :mode ("\\.js\\'")
-  :interpreter "node")
-
-(use-package prettier-js
-  :defer t)
-
-(use-package indium)
 #+END_SRC
 * org - markdown on steroids
 #+BEGIN_SRC emacs-lisp
@@ -1267,14 +1275,14 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
           ("C-x t B"   . treemacs-bookmark)
           ("C-x t C-t" . treemacs-find-file)
           ("C-x t M-t" . treemacs-find-tag)))
-  
+
   (use-package treemacs-projectile
     :after treemacs projectile)
-  
+
   (use-package treemacs-icons-dired
     :after treemacs dired
     :config (treemacs-icons-dired-mode))
-  
+
   (use-package treemacs-magit
     :after treemacs magit)
 
@@ -1311,13 +1319,13 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
     ;; Remember: Keyboard settings (e.g. setting Windows key etc are done in the control center.
     ;; I have mapped both Windows keys to hyper (super is not available in Mate 1.22).
     (my/load-neotree)))
- 
+
  ((string-equal system-type "gnu/linux")
   (progn
     (setq-default tide-tsserver-executable "/home/andreas/npm/bin/tsserver")
     ;; treemacs is also not working for Debian Stretch (emacs-25.1.1).
     (my/load-neotree)))
- 
+
  ((string-equal system-type "darwin")
   (progn
     (setq-default tide-tsserver-executable "/Users/andreas/npm/bin/tsserver")
@@ -1333,7 +1341,7 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
     (global-set-key (kbd "<end>") 'end-of-line)
     (global-set-key (kbd "C-<end>") 'end-of-buffer)
     (my/load-treemacs)))
- 
+
  ((string-equal system-type "windows-nt") ; Microsoft Windows
   (progn
     (setq-default tide-tsserver-executable "c:/Users/andreas/AppData/Roaming/npm/bin/tsserver")
