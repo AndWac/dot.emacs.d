@@ -439,6 +439,7 @@ I prefer electric-pair-mode over smartparens:
   :config (load-theme 'solarized-dark t))
 #+END_SRC
 *** VSC Dark Theme+
+    https://github.com/abelikoff/vscdark-theme
     I have patched the origin vscdark theme to make the cursor more visible (bg3 -> fg3):
 ##+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
@@ -449,6 +450,7 @@ I prefer electric-pair-mode over smartparens:
   :config (load-theme 'vscdark t))
 ##+END_SRC
 *** VSCode Dark
+    https://github.com/ianpan870102/vscode-dark-emacs-theme
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 ;; or
@@ -456,11 +458,18 @@ I prefer electric-pair-mode over smartparens:
 (load-theme 'vscode-dark t)
 #+END_SRC
 *** VSCode Dark+
+    https://github.com/ianpan870102/vscode-dark-plus-emacs-theme
 ##+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 ;; or
 ;;(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
 (load-theme 'vscode-dark-plus t)
+##+END_SRC
+*** Twilight
+    https://github.com/ianpan870102/twilight-emacs-theme
+##+BEGIN_SRC emacs-lisp
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(load-theme 'twilight t)
 ##+END_SRC
 * General
 *** uniquify
@@ -938,6 +947,54 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 
 (use-package indium)
 #+END_SRC
+*** Typescript
+**** Typescript-Mode
+    https://github.com/emacs-typescript/typescript.el
+#+BEGIN_SRC emacs-lisp
+(use-package typescript-mode)
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (ansi-color-apply-on-region compilation-filter-start (point-max)))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+#+END_SRC
+**** tide
+    tide https://github.com/ananthakumaran/tide
+    tide can be configured in a file named tsfmt.json like:
+    {
+    "indentSize": 4,
+    "tabSize": 4,
+    "insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": false,
+    "placeOpenBraceOnNewLineForFunctions": false,
+    "placeOpenBraceOnNewLineForControlBlocks": false
+    }
+##+BEGIN_SRC emacs-lisp
+(use-package tide)
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+
+(setq company-tooltip-align-annotations t)             ;; aligns annotation to the right hand side
+(add-hook 'before-save-hook 'tide-format-before-save)  ;; formats the buffer before saving
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+;;(use-package tide)
+;;   :after (typescript-mode company flycheck)
+;;   :hook ((typescript-mode . tide-setup)
+;;          (typescript-mode . tide-hl-identifier-mode)
+;;          (before-save . tide-format-before-save))        ;; formats the buffer before saving
+;;   :init
+;;   (setq company-tooltip-align-annotations t)             ;; aligns annotation to the right hand side
+;;   :config
+;;   (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil)))
+##+End_SRC
 *** cmake-mode
 #+BEGIN_SRC emacs-lisp
 (use-package cmake-mode
