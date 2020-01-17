@@ -135,11 +135,11 @@
 (defun display-startup-echo-area-message ()
   "The message that is shown after 'user-init-file' is loaded."
   (message
-   (concat "Welcome "      user-full-name
-           "! Emacs "      emacs-version
-           "; Org-mode "   org-version
-           "; System "     (system-name)
-           "; Time "       (emacs-init-time))))
+   (concat "Welcome "        user-full-name
+           " to Emacs "      emacs-version
+           " with Org-mode " org-version
+           " on System "     (system-name)
+           ". Startup took " (emacs-init-time))))
 
 (load custom-file 'NOERROR)
 #+END_SRC
