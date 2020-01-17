@@ -166,10 +166,32 @@
 #+END_SRC
 *** Font settings
 #+BEGIN_SRC emacs-lisp
-(if window-system
-    (if (> (x-display-pixel-height) 1200)
-        (set-frame-font "Fira Code 20" nil t)
-      (set-frame-font "Fira Code 15" nil t)))
+(use-package dash)  ;; I want to use --first
+
+(defun my/set-frame-font (fontname height)
+  "Call set-frame-font with fontname (string) concatenated with height (number)."
+  (let ((font (concat fontname " " (number-to-string height))))
+    (message "my/set-frame-font: selected font is %s" font)
+    (set-frame-font font nil t)))
+
+(defun my/font-candidate (fontlist)
+  "Return the first available font from fontlist."
+  (--first (find-font (font-spec :name it)) fontlist))
+
+;;(setq my/font-candidates (list "JetBrains Mono" "Source Code Pro" "Fira Code" "Inconsolata" "Courier New"))
+(defvar my/font-candidates (list "JetBrains Mono" "Source Code Pro" "Fira Code" "Inconsolata" "Courier New")
+  "This holds a priorized list of font names; the first font name that is being found will be used as the frame-font. Make sure that at least one of these fonts is installed on the system.")
+
+(defun my/set-fonts ()
+  "If run on a window-system this will set the frame-font from a list of font names taken from my/font-candidated while considerung the display width."
+  (if window-system
+      (let
+        ((font (my/font-candidate my/font-candidates)))
+        (if (> (x-display-pixel-height) 1200)
+            (my/set-frame-font font 20)    ;; If the width allows we will use a bigger font height.
+          (my/set-frame-font font 15)))))  ;; If the widht of the display is too small we will use a mid-size font height.
+
+(my/set-fonts)
 #+END_SRC
 *** Set frame size
 #+BEGIN_SRC emacs-lisp
@@ -886,8 +908,6 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 
 (use-package forge
   :after magit)
-
-(require 'magit-git)
 
 (defun my/magit-check-file-and-popup ()
   "If the file is version controlled with git
