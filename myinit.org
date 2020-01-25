@@ -52,7 +52,17 @@
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "<f5>") 'speedbar)
 (global-set-key (kbd "<f12>") 'make-frame-command)
-(global-set-key (kbd "M-o") 'other-window)          ;; C-x o is a 2 step key binding. `M-o' is much easier.
+(global-set-key (kbd "M-o") 'other-window)   ;; C-x o is a 2 step key binding. `M-o' is much easier.
+
+(defun shift-left(beg end)  (interactive "r") (shift-region beg end -1))
+(defun shift-right(beg end) (interactive "r") (shift-region beg end 1))
+
+(global-set-key ["H-M-right"] 'shift-right)  ;; >> shift every line of region
+(global-set-key ["H-M-left"]  'shift-left)   ;; << (and region remains highlighted)
+
+(global-set-key (kbd "M-+") 'text-scale-increase)
+(global-set-key (kbd "M--") 'text-scale-decrease)
+(global-set-key (kbd "M-=") (lambda () (interactive) (text-scale-set 0)))
 #+END_SRC
 * Interface tweaks
 *** Use better defaults
@@ -451,15 +461,15 @@ I prefer electric-pair-mode over smartparens:
   :config (load-theme 'material t))
 ##+END_SRC
 *** doom-themes
-##+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package doom-themes
-  :config  (load-theme 'doom-gruvbox t))
-##+END_SRC
+  :config  (load-theme 'doom-dark+ t))
+#+END_SRC
 *** Solarized
 ##+BEGIN_SRC emacs-lisp
 (use-package solarized-theme
   :config (load-theme 'solarized-dark t))
-#+END_SRC
+##+END_SRC
 *** VSC Dark Theme+
     https://github.com/abelikoff/vscdark-theme
     I have patched the origin vscdark theme to make the cursor more visible (bg3 -> fg3):
@@ -473,12 +483,12 @@ I prefer electric-pair-mode over smartparens:
 ##+END_SRC
 *** VSCode Dark
     https://github.com/ianpan870102/vscode-dark-emacs-theme
-#+BEGIN_SRC emacs-lisp
+##+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 ;; or
 ;;(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
 (load-theme 'vscode-dark t)
-#+END_SRC
+##+END_SRC
 *** VSCode Dark+
     https://github.com/ianpan870102/vscode-dark-plus-emacs-theme
 ##+BEGIN_SRC emacs-lisp
@@ -494,6 +504,12 @@ I prefer electric-pair-mode over smartparens:
 (load-theme 'twilight t)
 ##+END_SRC
 * General
+*** winner-mode
+    Alternative: https://github.com/wasamasa/eyebrowse
+#+BEGIN_SRC emacs-lisp
+(when (fboundp 'winner-mode)
+  (winner-mode 1))
+#+END_SRC
 *** uniquify
 uniquify overrides Emacs’ default mechanism for making buffer names unique (using suffixes like <2>, <3> etc.)
 with a more sensible behaviour which use parts of the file names to make the buffer names distinguishable.
@@ -819,6 +835,25 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
 *** conf-mode - UNIX config files
 #+BEGIN_SRC emacs-lisp
 (use-package conf-mode)
+#+END_SRC
+*** arrayify
+    Turn strings on newlines into a QUOTEd, comma-separated one-liner:
+  josh
+  sam
+  jed
+  C.J.
+  toby
+=>
+  "josh", "jed", "sam", "C.J.", "toby"
+#+BEGIN_SRC emacs-lisp
+(defun arrayify (start end quote)
+  (interactive "r\nMQuote: ")
+  (let ((insertion
+         (mapconcat
+          (lambda (x) (format "%s%s%s" quote x quote))
+          (split-string (buffer-substring start end)) ", ")))
+    (delete-region start end)
+    (insert insertion)))
 #+END_SRC
 * Development
 *** General Packages
