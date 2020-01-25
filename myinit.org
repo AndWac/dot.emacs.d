@@ -461,42 +461,18 @@ I prefer electric-pair-mode over smartparens:
   :config (load-theme 'material t))
 ##+END_SRC
 *** doom-themes
-#+BEGIN_SRC emacs-lisp
+##+BEGIN_SRC emacs-lisp
 (use-package doom-themes
   :config  (load-theme 'doom-dark+ t))
-#+END_SRC
-*** Solarized
-##+BEGIN_SRC emacs-lisp
-(use-package solarized-theme
-  :config (load-theme 'solarized-dark t))
-##+END_SRC
-*** VSC Dark Theme+
-    https://github.com/abelikoff/vscdark-theme
-    I have patched the origin vscdark theme to make the cursor more visible (bg3 -> fg3):
-##+BEGIN_SRC emacs-lisp
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-(load-theme 'vscdark t)
-##+END_SRC
-##+BEGIN_SRC emacs-lisp
-(use-package vscdark-theme
-  :config (load-theme 'vscdark t))
 ##+END_SRC
 *** VSCode Dark
     https://github.com/ianpan870102/vscode-dark-emacs-theme
-##+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 ;; or
 ;;(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
 (load-theme 'vscode-dark t)
-##+END_SRC
-*** VSCode Dark+
-    https://github.com/ianpan870102/vscode-dark-plus-emacs-theme
-##+BEGIN_SRC emacs-lisp
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-;; or
-;;(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
-(load-theme 'vscode-dark-plus t)
-##+END_SRC
+#+END_SRC
 *** Twilight
     https://github.com/ianpan870102/twilight-emacs-theme
 ##+BEGIN_SRC emacs-lisp
