@@ -341,7 +341,7 @@
          ("M-p" . highlight-symbol-prev)))
 #+END_SRC
 *** Better interaction with X clipboard
-#+BEGIN_SRC emacs-lisp
+##+BEGIN_SRC emacs-lisp
 (setq-default
   ;; Makes killing/yanking interact with the clipboard.
   x-select-enable-clipboard t
@@ -368,7 +368,7 @@
 
   ;; Mouse yank commands yank at point instead of at click.
   mouse-yank-at-point t)
-#+END_SRC
+##+END_SRC
 *** Parenthesis
 #+BEGIN_SRC emacs-lisp
 ;; Automatic parenthesis
@@ -403,7 +403,7 @@ I prefer electric-pair-mode over smartparens:
   (electric-pair-mode 1)
 ##+END_SRC
 *** OpenWith
-##+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (when (require 'openwith nil 'noerror)
     (setq openwith-associations
           (list
@@ -435,7 +435,7 @@ I prefer electric-pair-mode over smartparens:
                  '(file))))
 
     (openwith-mode 1))
-##+END_SRC
+#+END_SRC
 *** Wave light near the cursor
 #+BEGIN_SRC emacs-lisp
 (use-package beacon
@@ -467,11 +467,17 @@ I prefer electric-pair-mode over smartparens:
 ##+END_SRC
 *** VSCode Dark
     https://github.com/ianpan870102/vscode-dark-emacs-theme
-#+BEGIN_SRC emacs-lisp
+##+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 ;; or
 ;;(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
 (load-theme 'vscode-dark t)
+##+END_SRC
+*** VSCode Dark+
+#+BEGIN_SRC emacs-lisp
+(use-package vscode-dark-plus-theme
+  :config
+  (load-theme 'vscode-dark-plus t))
 #+END_SRC
 *** Twilight
     https://github.com/ianpan870102/twilight-emacs-theme
@@ -528,13 +534,11 @@ across sessions on exiting Emacs - you can then access this list through a comma
 (use-package undo-tree
   :diminish                       ;; Don't show an icon in the modeline
   :config
-  ;; Always have it on
+  ;; Always have it on:
   (global-undo-tree-mode)
-
-  ;; Each node in the undo tree should have a timestamp.
+  ;; Each node in the undo tree should have a timestamp:
   (setq undo-tree-visualizer-timestamps t)
-
-  ;; Show a diff window displaying changes between undo nodes.
+  ;; Show a diff window displaying changes between undo nodes:
   (setq undo-tree-visualizer-diff t))
 #+END_SRC
 *** esup
