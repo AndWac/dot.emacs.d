@@ -6,7 +6,7 @@
 (require 'package)
 (setq package-enable-at-startup nil)
 (setq package-archives '(
-                         ("org"       . "https://orgmode.org/elpa/")
+;;                         ("org"       . "https://orgmode.org/elpa/")
                          ("melpa"     . "https://melpa.org/packages/")
                          ("gnu"       . "http://elpa.gnu.org/packages/")))
 (package-initialize)
