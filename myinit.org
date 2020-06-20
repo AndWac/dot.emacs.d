@@ -17,14 +17,6 @@
 (when (display-graphic-p)
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 #+END_SRC
-##+BEGIN_SRC emacs-lisp
-(set-language-environment 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-selection-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
-(setq locale-coding-system 'utf-8)
-##+END_SRC
 * use-package tweaks
 #+BEGIN_SRC emacs-lisp
 (setq use-package-always-ensure t)  ;; Set the default to automatically install packages if they are not availably yet.
@@ -35,7 +27,7 @@
   :config
   (setq
    auto-package-update-delete-old-versions t  ;; Delete residual old versions
-   auto-package-update-interval 3             ;; Check every 3 days for updates
+   auto-package-update-interval 7             ;; Check every 7 days for updates
    auto-package-update-hide-results t)        ;; Do not bother me when updates have taken place
   (auto-package-update-maybe))                ;; Update installed packages at startup if there is an update pending
 
@@ -61,13 +53,12 @@
 
 (defun shift-left(beg end)  (interactive "r") (shift-region beg end -1))
 (defun shift-right(beg end) (interactive "r") (shift-region beg end 1))
-
 (global-set-key ["H-M-right"] 'shift-right)  ;; >> shift every line of region
 (global-set-key ["H-M-left"]  'shift-left)   ;; << (and region remains highlighted)
 
-(global-set-key (kbd "M-+") 'text-scale-increase)
-(global-set-key (kbd "M--") 'text-scale-decrease)
-(global-set-key (kbd "M-=") (lambda () (interactive) (text-scale-set 0)))
+;; C-x C-0 restores the default font size
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
 #+END_SRC
 * Interface tweaks
 *** Use better defaults
@@ -175,9 +166,6 @@
   ;; Do not show tooltips
   (when (fboundp 'tooltip-mode)
     (tooltip-mode -1))
-
-  ;; Highlight line on point.
-  (global-hl-line-mode t))
 #+END_SRC
 *** Font settings
 #+BEGIN_SRC emacs-lisp
@@ -305,8 +293,6 @@
 (add-hook 'python-mode-hook 'my-python-prettify-symbols-hook)
 (add-hook 'prog-mode-hook 'my-prettify-symbols-hook)
 #+END_SRC
-*** ido - Interactively do things
-    I don't use this because I prefer swiper:
 *** rainbow-delimiters - parenthesis change color depending on depth
 #+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
@@ -330,35 +316,6 @@
   :bind (("M-n" . highlight-symbol-next)
          ("M-p" . highlight-symbol-prev)))
 #+END_SRC
-*** Better interaction with X clipboard
-##+BEGIN_SRC emacs-lisp
-(setq-default
-  ;; Makes killing/yanking interact with the clipboard.
-  x-select-enable-clipboard t
-
-  ;; To understand why this is done, read `X11 Copy & Paste to/from Emacs' section here:
-  ;; https://www.emacswiki.org/emacs/CopyAndPaste.
-  x-select-enable-primary t
-
-  ;; Save clipboard strings into kill ring before replacing them. When
-  ;; one selects something in another program to paste it into Emacs, but
-  ;; kills something in Emacs before actually pasting it, this selection
-  ;; is gone unless this variable is non-nil.
-  save-interprogram-paste-before-kill t
-
-  ;; Shows all options when running apropos. For more info,
-  ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Apropos.html.
-  apropos-do-all t
-
-   ;; Text selected with the mouse is automatically copied to clipboard.
-   mouse-drag-copy-region t
-
-   ;; Delete Selection mode lets you treat an Emacs region much like a typical text selection outside of Emacs: You can replace the active region. We can delete selected text just by hitting the backspace key.
-   delete-selection-mode 1
-
-  ;; Mouse yank commands yank at point instead of at click.
-  mouse-yank-at-point t)
-##+END_SRC
 *** Parenthesis
 #+BEGIN_SRC emacs-lisp
 ;; Automatic parenthesis
@@ -420,6 +377,10 @@
                  '(file))))
     (openwith-mode 1))
 #+END_SRC
+*** Highlight line on point
+    #+BEGIN_SRC emacs-lisp
+(global-hl-line-mode t))
+    #+END_SRC
 *** Wave light near the cursor
 #+BEGIN_SRC emacs-lisp
 (use-package beacon
@@ -431,12 +392,6 @@
 #+BEGIN_SRC emacs-lisp
 (use-package dimmer
   :config (dimmer-mode))
-#+END_SRC
-*** Text zoom keys
-    C-x C-0 restores the default font size
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-+") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
 #+END_SRC
 * Theming
 *** material-theme
