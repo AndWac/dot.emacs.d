@@ -13,13 +13,18 @@
 #+END_SRC
 * UTF-8
 #+BEGIN_SRC emacs-lisp
+(prefer-coding-system 'utf-8)
+(when (display-graphic-p)
+  (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
+#+END_SRC
+##+BEGIN_SRC emacs-lisp
 (set-language-environment 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (set-selection-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 (setq locale-coding-system 'utf-8)
-#+END_SRC
+##+END_SRC
 * use-package tweaks
 #+BEGIN_SRC emacs-lisp
 (setq use-package-always-ensure t)  ;; Set the default to automatically install packages if they are not availably yet.
@@ -1118,42 +1123,41 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
   (setq prolog-system 'swi))
 #+END_SRC
 *** Python packages
+    Possible enhancements:
     elpy - Emacs Python Development Environment (https://github.com/jorgenschaefer/elpy)
     jedi - Python auto-completion for Emacs (https://github.com/tkf/emacs-jedi)
 #+BEGIN_SRC emacs-lisp
-(use-package jedi
+;; Python Mode
+;; Install: pip install pyflakes autopep8
+(use-package python
+  :ensure nil
+  :hook (inferior-python-mode . (lambda ()
+                                  (process-query-on-exit-flag
+                                   (get-process "Python"))))
   :init
-  (add-hook 'python-mode-hook 'jedi:setup)
-  (add-hook 'python-mode-hook 'jedi:ac-setup))
-
-(use-package elpy
-  :defer 2
+  ;; Disable readline based native completion
+  (setq python-shell-completion-native-enable nil)
   :config
-  ;; Use Flycheck instead of Flymake
-  (when (require 'flycheck nil t)
-    (remove-hook 'elpy-modules 'elpy-module-flymake)
-    (remove-hook 'elpy-modules 'elpy-module-yasnippet)
-    (remove-hook 'elpy-mode-hook 'elpy-module-highlight-indentation)
-    (add-hook 'elpy-mode-hook 'flycheck-mode))
-  (elpy-enable)
-  (setq elpy-rpc-backend "jedi")
-  (unless (string-equal system-type "usg-unix-v") ; UNIX System V (OpenIndiana) doesn't have Jupyter
-    (progn
-      (setq python-shell-interpreter "jupyter"
-            python-shell-interpreter-args "console --simple-prompt"
-            python-shell-prompt-detect-failure-warning nil)
-      (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter"))))
-
-(use-package py-autopep8
-  :init (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
-
-(use-package yasnippet
-  :init (yas-global-mode 1))
-
-(use-package yasnippet-snippets)
+  ;; Default to Python 3. Prefer the versioned Python binaries since some
+  ;; systems stupidly make the unversioned one point at Python 2.
+  (when (and (executable-find "python3")
+             (string= python-shell-interpreter "python"))
+    (setq python-shell-interpreter "python3"))
+  ;; Env vars
+  (with-eval-after-load 'exec-path-from-shell
+    (exec-path-from-shell-copy-env "PYTHONPATH"))
+  ;; Live Coding in Python
+  (use-package live-py-mode))
+#+END_SRC
+*** eglot
+    [[https://github.com/joaotavora/eglot][eglot project page on GitHub]]
+#+BEGIN_SRC emacs-lisp
+  (use-package eglot
+    :hook (prog-mode . eglot-ensure))
 #+END_SRC
 *** LSP
-#+BEGIN_SRC emacs-lisp
+    eglot is working better for me, thus I don't use LSP:
+##+BEGIN_SRC emacs-lisp
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :hook (prog-mode-hook . lsp-deferred)
@@ -1169,7 +1173,7 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
 (use-package company-lsp :commands company-lsp)
 (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 (use-package dap-mode)  ;; Debugger support
-#+END_SRC
+##+END_SRC
 * Web
 #+BEGIN_SRC emacs-lisp
 (use-package web-mode
@@ -1378,11 +1382,12 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
   (use-package treemacs-magit
     :after treemacs magit)
 
-  (use-package lsp-treemacs
-    :after treemacs
-    :config
-    (lsp-metals-treeview-enable t)
-    (setq lsp-metals-treeview-show-when-views-received t)))
+;;  (use-package lsp-treemacs
+;;    :after treemacs
+;;    :config
+;;    (lsp-metals-treeview-enable t)
+;;    (setq lsp-metals-treeview-show-when-views-received t))
+)
 
 (defun my/load-neotree ()
   (use-package neotree
