@@ -247,41 +247,26 @@
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
 #+END_SRC
-*** Tabs
-##+BEGIN_SRC emacs-lisp
-(use-package centaur-tabs
-  :demand
-  :init (setq centaur-tabs-set-bar 'over)
-  :config
-  (centaur-tabs-mode +1)
-  (centaur-tabs-headline-match)
-  (setq centaur-tabs-set-modified-marker t
-        centaur-tabs-modified-marker " ● "
-        centaur-tabs-cycle-scope 'tabs
-        centaur-tabs-height 30
-        centaur-tabs-set-icons t
-        centaur-tabs-close-button " × ")
-  (when (member "Arial" (font-family-list))
-    (centaur-tabs-change-fonts "Arial" 130))
-  (centaur-tabs-group-by-projectile-project)
-  :bind
-  ("C-S-<tab>" . centaur-tabs-backward)
-  ("C-<tab>" . centaur-tabs-forward))
-##+END_SRC
-*** telephone-line
-    Better mode line
-##+BEGIN_SRC emacs-lisp
-(use-package powerline
-  :config
-  (powerline-center-theme))
-##+END_SRC
 *** Doom modeline
     https://github.com/seagle0128/doom-modeline
     Beispiel: https://github.com/guidoschmidt/emacs.d/blob/master/config/appearance/modeline.el
 #+BEGIN_SRC emacs-lisp
 (use-package doom-modeline
   :ensure t
-  :hook (after-init . doom-modeline-mode))
+  :config
+  ;; Configure doom-modeline variables
+  (setq find-file-visit-truename t)
+  (setq doom-modeline-buffer-file-name-style 'truncate-upto-project)
+  ;; If doom-modeline-icon is set to nil the modeline will have less height but there won't be cool icons.
+  (setq doom-modeline-icon nil)
+  (setq doom-modeline-lsp t)
+  ;; How tall the mode-line should be. It's only respected in GUI.
+  ;; If the actual char height is larger, it respects the actual height.
+  (setq doom-modeline-height 22)
+  ;; How wide the mode-line bar should be. It's only respected in GUI.
+  (setq doom-modeline-bar-width 3)
+  :hook
+  (after-init . doom-modeline-mode))
 #+END_SRC
 *** pretty - base set of pretty symbols.
 #+BEGIN_SRC emacs-lisp
@@ -403,10 +388,6 @@
   :bind
   ("C-x j" . smartparens-mode))
 #+END_SRC
-I prefer electric-pair-mode over smartparens:
-##+BEGIN_SRC emacs-lisp
-  (electric-pair-mode 1)
-##+END_SRC
 *** OpenWith
 #+BEGIN_SRC emacs-lisp
   (when (require 'openwith nil 'noerror)
@@ -431,14 +412,12 @@ I prefer electric-pair-mode over smartparens:
                   '("html"))
                  "firefox"
                  '(file))
-
            '("\\.lyx" "lyx" (file))
            '("\\.chm" "kchmviewer" (file))
            (list (openwith-make-extension-regexp
                   '("pdf" "ps" "ps.gz" "dvi"))
                  "emacs"
                  '(file))))
-
     (openwith-mode 1))
 #+END_SRC
 *** Wave light near the cursor
@@ -839,6 +818,152 @@ TRAMP stands for Transparent Remote (file) Access, Multiple Protocol
           (split-string (buffer-substring start end)) ", ")))
     (delete-region start end)
     (insert insertion)))
+#+END_SRC
+* OS dependent settings and packages
+  https://github.com/Alexander-Miller/treemacs
+  https://github.com/emacs-lsp/lsp-treemacs
+  https://github.com/jaypei/emacs-neotree
+#+BEGIN_SRC emacs-lisp
+(defun my/load-treemacs ()
+  (use-package treemacs
+    :defer t
+    :init
+    (with-eval-after-load 'winum
+      (define-key winum-keymap (kbd "M-´") #'treemacs-select-window))
+    :config
+    (progn
+      (setq
+       treemacs-collapse-dirs (if (executable-find "python") 3 0)
+       treemacs-deferred-git-apply-delay   0.5
+       treemacs-display-in-side-window     t
+       treemacs-file-event-delay           5000
+       treemacs-file-follow-delay          0.2
+       treemacs-follow-after-init          t
+       treemacs-recenter-distance          0.1
+       treemacs-git-command-pipe           ""
+       treemacs-goto-tag-strategy          'refetch-index
+       treemacs-indentation                2
+       treemacs-indentation-string         " "
+       treemacs-is-never-other-window      nil
+       treemacs-max-git-entries            5000
+       treemacs-no-png-images              nil
+       treemacs-no-delete-other-windows    t
+       treemacs-project-follow-cleanup     nil
+       treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+       treemacs-recenter-after-file-follow nil
+       treemacs-recenter-after-tag-follow  nil
+       treemacs-show-cursor                nil
+       treemacs-show-hidden-files          t
+       treemacs-silent-filewatch           nil
+       treemacs-silent-refresh             nil
+       treemacs-sorting                    'alphabetic-desc
+       treemacs-space-between-root-nodes   t
+       treemacs-tag-follow-cleanup         t
+       treemacs-tag-follow-delay           1.5
+       treemacs-width                      35)
+      (treemacs-follow-mode t)
+      (treemacs-filewatch-mode t)
+      (treemacs-fringe-indicator-mode t)
+      (pcase (cons (not (null (executable-find "git")))
+                   (not (null (executable-find "python3"))))
+        (`(t . t)
+         (treemacs-git-mode 'deferred))
+        (`(t . _)
+         (treemacs-git-mode 'simple))))
+    :bind
+    (:map global-map
+          ("M-0"       . treemacs-select-window)
+          ("C-x t 1"   . treemacs-delete-other-windows)
+          ("<f8>"      . treemacs)
+          ("C-x t B"   . treemacs-bookmark)
+          ("C-x t C-t" . treemacs-find-file)
+          ("C-x t M-t" . treemacs-find-tag)))
+
+  (use-package treemacs-projectile
+    :after treemacs projectile)
+
+  (use-package treemacs-icons-dired
+    :after treemacs dired
+    :config (treemacs-icons-dired-mode))
+
+  (use-package treemacs-magit
+    :after treemacs magit)
+
+;;  (use-package lsp-treemacs
+;;    :after treemacs
+;;    :config
+;;    (lsp-metals-treeview-enable t)
+;;    (setq lsp-metals-treeview-show-when-views-received t))
+)
+
+(defun my/load-neotree ()
+  (use-package neotree
+    :config
+    (setq
+     neo-window-width 32
+     neo-create-file-auto-open t
+     neo-banner-message nil
+     neo-show-updir-line t
+     neo-window-fixed-size nil
+     neo-vc-integration nil
+     neo-mode-line-type 'neotree
+     neo-smart-open t
+     neo-show-hidden-files t
+     neo-mode-line-type 'none
+     neo-auto-indent-point t
+     neo-theme (if (display-graphic-p) 'icons 'arrow)
+     neo-hidden-regexp-list '("venv" "\\.pyc$" "~$" "\\.git" "__pycache__" ".DS_Store"))
+    (global-set-key [f8] 'neotree-toggle)))
+
+(cond
+ ((string-equal system-type "usg-unix-v") ; UNIX System V
+  (progn
+    (setq-default tide-tsserver-executable "/export/home/andreas/npm/bin/tsserver")
+    ;; We have a problem with graphics in OpenIndiana, thus we use the simpler neotree for it.
+    ;; Remember: Keyboard settings (e.g. setting Windows key etc are done in the control center.
+    ;; I have mapped both Windows keys to hyper (super is not available in Mate 1.22).
+    (my/load-neotree)))
+
+ ((string-equal system-type "gnu/linux")
+  (progn
+    (setq-default tide-tsserver-executable "/home/andreas/npm/bin/tsserver")
+    ;; treemacs is also not working for Debian Stretch (emacs-25.1.1).
+    (my/load-neotree)))
+
+ ((string-equal system-type "darwin")
+  (progn
+    (setq-default tide-tsserver-executable "/Users/andreas/npm/bin/tsserver")
+    (setq
+     ;; I am mapping the command key to hyper in order to be able to have it the same on all operating systems.
+     mac-command-modifier 'hyper   ; make cmd key do Hyper (similar to Windows key on PC keyboard)
+     mac-option-modifier  'meta    ; make opt key do Meta
+     mac-control-modifier 'control ; make Control key do Control
+     ns-function-modifier 'super   ; make Fn key do Super
+     mac-right-option-modifier nil); let right option undefined in order to let AltGr work {[]}\@~|²³
+    (global-set-key (kbd "<home>") 'beginning-of-line)
+    (global-set-key (kbd "C-<home>") 'beginning-of-buffer)
+    (global-set-key (kbd "<end>") 'end-of-line)
+    (global-set-key (kbd "C-<end>") 'end-of-buffer)
+    (my/load-treemacs)))
+
+ ((string-equal system-type "windows-nt") ; Microsoft Windows
+  (progn
+    (setq-default tide-tsserver-executable "c:/Users/andreas/AppData/Roaming/npm/bin/tsserver")
+    (setq
+     ;; I am mapping the Windows key to hyper in order to have it the same on all operating systems.
+     w32-pass-lwindow-to-system nil
+     w32-lwindow-modifier 'hyper    ; Left Windows key
+     w32-pass-rwindow-to-system nil
+     w32-rwindow-modifier 'hyper    ; Right Windows key
+     w32-pass-apps-to-system nil
+     w32-apps-modifier 'super)      ; Menu/App key (this is an additional key on my Cherry MX Board 3.0 located left next to the right control key)
+    ;; setting ‘w32-lwindow-modifier’ to ‘super’ and then calling ‘(w32-register-hot-key [s-])’ grabs all combinations of the left Windows key to Emacs
+    (w32-register-hot-key [H-])     ; Let Emacs handle hyper (Windows keys)
+    (my/load-treemacs)))
+
+ (use-package exec-path-from-shell
+   :config (when (memq window-system '(mac ns x))
+             (exec-path-from-shell-initialize))))
 #+END_SRC
 * Development
 *** General Packages
@@ -1311,152 +1436,6 @@ auto switch to Indent Mode whenever parens are balance in Paren Mode
   (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook #'TeX-revert-document-buffer)
   ;; to use pdfview with auctex
   (add-hook 'LaTeX-mode-hook 'pdf-tools-install))
-#+END_SRC
-* OS dependent settings and packages
-  https://github.com/Alexander-Miller/treemacs
-  https://github.com/emacs-lsp/lsp-treemacs
-  https://github.com/jaypei/emacs-neotree
-#+BEGIN_SRC emacs-lisp
-(defun my/load-treemacs ()
-  (use-package treemacs
-    :defer t
-    :init
-    (with-eval-after-load 'winum
-      (define-key winum-keymap (kbd "M-´") #'treemacs-select-window))
-    :config
-    (progn
-      (setq
-       treemacs-collapse-dirs (if (executable-find "python") 3 0)
-       treemacs-deferred-git-apply-delay   0.5
-       treemacs-display-in-side-window     t
-       treemacs-file-event-delay           5000
-       treemacs-file-follow-delay          0.2
-       treemacs-follow-after-init          t
-       treemacs-recenter-distance          0.1
-       treemacs-git-command-pipe           ""
-       treemacs-goto-tag-strategy          'refetch-index
-       treemacs-indentation                2
-       treemacs-indentation-string         " "
-       treemacs-is-never-other-window      nil
-       treemacs-max-git-entries            5000
-       treemacs-no-png-images              nil
-       treemacs-no-delete-other-windows    t
-       treemacs-project-follow-cleanup     nil
-       treemacs-persist-file               (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-       treemacs-recenter-after-file-follow nil
-       treemacs-recenter-after-tag-follow  nil
-       treemacs-show-cursor                nil
-       treemacs-show-hidden-files          t
-       treemacs-silent-filewatch           nil
-       treemacs-silent-refresh             nil
-       treemacs-sorting                    'alphabetic-desc
-       treemacs-space-between-root-nodes   t
-       treemacs-tag-follow-cleanup         t
-       treemacs-tag-follow-delay           1.5
-       treemacs-width                      35)
-      (treemacs-follow-mode t)
-      (treemacs-filewatch-mode t)
-      (treemacs-fringe-indicator-mode t)
-      (pcase (cons (not (null (executable-find "git")))
-                   (not (null (executable-find "python3"))))
-        (`(t . t)
-         (treemacs-git-mode 'deferred))
-        (`(t . _)
-         (treemacs-git-mode 'simple))))
-    :bind
-    (:map global-map
-          ("M-0"       . treemacs-select-window)
-          ("C-x t 1"   . treemacs-delete-other-windows)
-          ("<f8>"      . treemacs)
-          ("C-x t B"   . treemacs-bookmark)
-          ("C-x t C-t" . treemacs-find-file)
-          ("C-x t M-t" . treemacs-find-tag)))
-
-  (use-package treemacs-projectile
-    :after treemacs projectile)
-
-  (use-package treemacs-icons-dired
-    :after treemacs dired
-    :config (treemacs-icons-dired-mode))
-
-  (use-package treemacs-magit
-    :after treemacs magit)
-
-;;  (use-package lsp-treemacs
-;;    :after treemacs
-;;    :config
-;;    (lsp-metals-treeview-enable t)
-;;    (setq lsp-metals-treeview-show-when-views-received t))
-)
-
-(defun my/load-neotree ()
-  (use-package neotree
-    :config
-    (setq
-     neo-window-width 32
-     neo-create-file-auto-open t
-     neo-banner-message nil
-     neo-show-updir-line t
-     neo-window-fixed-size nil
-     neo-vc-integration nil
-     neo-mode-line-type 'neotree
-     neo-smart-open t
-     neo-show-hidden-files t
-     neo-mode-line-type 'none
-     neo-auto-indent-point t
-     neo-theme (if (display-graphic-p) 'icons 'arrow)
-     neo-hidden-regexp-list '("venv" "\\.pyc$" "~$" "\\.git" "__pycache__" ".DS_Store"))
-    (global-set-key [f8] 'neotree-toggle)))
-
-(cond
- ((string-equal system-type "usg-unix-v") ; UNIX System V
-  (progn
-    (setq-default tide-tsserver-executable "/export/home/andreas/npm/bin/tsserver")
-    ;; We have a problem with graphics in OpenIndiana, thus we use the simpler neotree for it.
-    ;; Remember: Keyboard settings (e.g. setting Windows key etc are done in the control center.
-    ;; I have mapped both Windows keys to hyper (super is not available in Mate 1.22).
-    (my/load-neotree)))
-
- ((string-equal system-type "gnu/linux")
-  (progn
-    (setq-default tide-tsserver-executable "/home/andreas/npm/bin/tsserver")
-    ;; treemacs is also not working for Debian Stretch (emacs-25.1.1).
-    (my/load-neotree)))
-
- ((string-equal system-type "darwin")
-  (progn
-    (setq-default tide-tsserver-executable "/Users/andreas/npm/bin/tsserver")
-    (setq
-     ;; I am mapping the command key to hyper in order to be able to have it the same on all operating systems.
-     mac-command-modifier 'hyper   ; make cmd key do Hyper (similar to Windows key on PC keyboard)
-     mac-option-modifier  'meta    ; make opt key do Meta
-     mac-control-modifier 'control ; make Control key do Control
-     ns-function-modifier 'super   ; make Fn key do Super
-     mac-right-option-modifier nil); let right option undefined in order to let AltGr work {[]}\@~|²³
-    (global-set-key (kbd "<home>") 'beginning-of-line)
-    (global-set-key (kbd "C-<home>") 'beginning-of-buffer)
-    (global-set-key (kbd "<end>") 'end-of-line)
-    (global-set-key (kbd "C-<end>") 'end-of-buffer)
-    (my/load-treemacs)))
-
- ((string-equal system-type "windows-nt") ; Microsoft Windows
-  (progn
-    (setq-default tide-tsserver-executable "c:/Users/andreas/AppData/Roaming/npm/bin/tsserver")
-    (setq
-     ;; I am mapping the Windows key to hyper in order to have it the same on all operating systems.
-     w32-pass-lwindow-to-system nil
-     w32-lwindow-modifier 'hyper    ; Left Windows key
-     w32-pass-rwindow-to-system nil
-     w32-rwindow-modifier 'hyper    ; Right Windows key
-     w32-pass-apps-to-system nil
-     w32-apps-modifier 'super)      ; Menu/App key (this is an additional key on my Cherry MX Board 3.0 located left next to the right control key)
-    ;; setting ‘w32-lwindow-modifier’ to ‘super’ and then calling ‘(w32-register-hot-key [s-])’ grabs all combinations of the left Windows key to Emacs
-    (w32-register-hot-key [H-])     ; Let Emacs handle hyper (Windows keys)
-    (my/load-treemacs)))
-
- (use-package exec-path-from-shell
-   :config (when (memq window-system '(mac ns x))
-             (exec-path-from-shell-initialize))))
 #+END_SRC
 * Holidays
 #+BEGIN_SRC emacs-lisp
